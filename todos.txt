@@ -1,0 +1,6 @@
+Steps to being done:
+
+1. Create a main page
+  Show amount remaining at top
+
+  Replace buttons with forms to change allocated amount

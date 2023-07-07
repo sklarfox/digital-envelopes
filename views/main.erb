@@ -1,1 +1,17 @@
-Welcome to the budget.
+<table>
+  <thead>
+    <tr>
+      <th><h4>Category</h4></th>
+      <th><h4>Allocated</h4></th>
+      <th><h4>Remaining</h4></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @categories.each do |category| %>
+      <tr>
+      <td><%= category.name %></td>
+      <td><%= category.assigned_amount%></td>
+      <td><%= category.amount_remaining %></td>
+      <td><button>Edit</button></td>
+      </tr>
+    <% end %>

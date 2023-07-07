@@ -1,7 +1,7 @@
 require "sinatra"
 require "sinatra/content_for"
 require "tilt/erubis"
-require_relative "budget_classes"
+require_relative 'budget_classes'
 require_relative "database_persistance"
 
 require 'pry'
@@ -15,13 +15,23 @@ end
 
 configure(:development) do
   require "sinatra/reloader"
-  also_reload
+  also_reload "database_persistance.rb"
+  also_reload "budget_classes.rb"
 end
 
 helpers do
 
 end
 
+before do
+  @storage = DatabasePersistance.new
+end
+
 get '/' do
-  erb :home, layout: :layout
+  redirect "/budget"
+end
+
+get '/budget' do
+  @categories = @storage.all_categories
+  erb :main, layout: :layout
 end
