@@ -23,5 +23,5 @@ helpers do
 end
 
 get '/' do
-  'hello world'
+  erb :home, layout: :layout
 end
