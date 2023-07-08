@@ -20,7 +20,9 @@ configure(:development) do
 end
 
 helpers do
-
+  def to_be_assigned
+    @storage.sum_all_inflows - @storage.sum_all_assigned_amounts
+  end
 end
 
 before do
@@ -34,4 +36,8 @@ end
 get '/budget' do
   @categories = @storage.all_categories
   erb :main, layout: :layout
+end
+
+get '/category/:id' do
+  erb :category, layout: :layout
 end

@@ -28,4 +28,14 @@ class DatabasePersistance
     result = query(sql, category_id)
     result.first['sum'].to_f
   end
+
+  def sum_all_inflows
+    result = query('SELECT sum(amount) FROM transactions WHERE inflow = true;')
+    result.first['sum'].to_f
+  end
+
+  def sum_all_assigned_amounts
+    result = query('SELECT sum(assigned_amount) FROM categories;')
+    result.first['sum'].to_f
+  end
 end

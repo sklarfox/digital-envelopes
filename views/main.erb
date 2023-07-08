@@ -1,3 +1,5 @@
+<h3>To be assigned: <%= to_be_assigned %></h3>
+
 <table>
   <thead>
     <tr>
@@ -9,10 +11,10 @@
   <tbody>
     <% @categories.each do |category| %>
       <tr>
-      <td><%= category.name %></td>
-      <td><%= category.assigned_amount%></td>
-      <td><%= category.amount_remaining %></td>
-      <td><button>Edit</button></td>
-    </tr>
-  </tbody>
+        <td><%= category.name %></td>
+        <td><%= category.assigned_amount%></td>
+        <td><%= category.amount_remaining %></td>
+        <td><button>Edit</button></td>
+      </tr>
     <% end %>
+  </tbody>
