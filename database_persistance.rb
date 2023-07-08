@@ -25,7 +25,7 @@ class DatabasePersistance
   end
 
   def all_categories
-    sql = "SELECT * FROM categories WHERE name != 'Inflow';"
+    sql = "SELECT * FROM categories WHERE name != 'Inflow' ORDER BY name;"
     result = query(sql)
 
     result.map do |tuple|
@@ -69,5 +69,10 @@ class DatabasePersistance
   def add_new_category(name)
     sql = 'INSERT INTO categories (name) VALUES ($1)'
     query(sql, name)
+  end
+
+  def set_category_allocated_amount(amount, id)
+    sql = 'UPDATE categories SET assigned_amount = $1 WHERE id = $2'
+    query(sql, amount, id)
   end
 end

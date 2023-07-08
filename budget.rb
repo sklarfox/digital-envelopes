@@ -38,6 +38,10 @@ def error_for_category_name(name)
   end
 end
 
+def error_for_allocation_amount(amount)
+  return "The allocation amount must be greater than 0." unless amount >= 0
+end
+
 before do
   @storage = DatabasePersistance.new
 end
@@ -55,7 +59,7 @@ get '/category/new' do
   erb :new_category, layout: :layout
 end
 
-post '/category/new' do
+post '/category/new_name' do
   category_name = params[:category_name].strip
 
   error = error_for_category_name(category_name)
@@ -66,6 +70,21 @@ post '/category/new' do
     @storage.add_new_category(category_name)
     session[:success] = "The category has been created."
     redirect '/budget'
+  end
+end
+
+post '/category/:id/new_allocation' do
+  amount = params[:new_assigned_amount].to_f
+  id = params[:id].to_i
+  @category = @storage.load_category(id)
+  error = error_for_allocation_amount(amount)
+  if error
+    session[:error] = error
+    erb :category, layout: :layout
+  else
+    session[:success] = "The allocated amount has been updated."
+    @storage.set_category_allocated_amount(amount, id)
+    redirect "budget"
   end
 end
 

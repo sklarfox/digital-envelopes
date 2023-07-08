@@ -16,6 +16,14 @@ class Category
   end
 
   attr_reader :id, :name, :assigned_amount, :amount_remaining
+
+  def assigned_amount_formatted
+    format('%.2f', assigned_amount)
+  end
+
+  def amount_remaining_formatted
+    format('%.2f', amount_remaining)
+  end
 end
 
 class Transaction
