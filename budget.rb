@@ -9,8 +9,9 @@ require 'pry-byebug'
 
 configure do
   enable :sessions
-  set :session_secret, '80a613c2f7942425a9f66eabu1391821a51ad103801a4be1df9ca6d26c3fa698'
-  set :erb, :escape_html => true
+  set :session_secret,
+      '80a613c2f7942425a9f66eabu1391821a51ad103801a4be1df9ca6d26c3fa698'
+  set :erb, escape_html: true
 end
 
 configure(:development) do

@@ -34,7 +34,11 @@ class DatabasePersistance
   end
 
   def sum_category_transactions(category_id)
-    sql = 'SELECT sum(amount) FROM transactions WHERE category_id = $1 AND inflow = false;'
+    sql = <<~SQL
+      SELECT sum(amount) FROM transactions
+      WHERE category_id = $1 AND inflow = false;
+    SQL
+
     result = query(sql, category_id)
     result.first['sum'].to_f
   end
@@ -59,15 +63,7 @@ class DatabasePersistance
   end
 
   def tuple_to_transaction_object(tuple)
-    id = tuple['id']
-    amount = tuple['amount']
-    memo = tuple['memo']
-    inflow = tuple['inflow'] == 'true'
-    date = tuple['date'].split('-').map(&:to_i)
-    category_id = tuple['category_id']
-    account_id = tuple['account_id']
-
-    Transaction.new(id, amount, memo, inflow, date, category_id, account_id)
+    Transaction.new(tuple)
   end
 
   def add_new_category(name)

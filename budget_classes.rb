@@ -16,18 +16,17 @@ class Category
   end
 
   attr_reader :id, :name, :assigned_amount, :amount_remaining
-  
 end
 
 class Transaction
-  def initialize(id, amount, memo, inflow, date, category_id, account_id)
-    @id = id
-    @amount = amount.to_f
-    @memo = memo
-    @inflow = inflow
-    @date = Date.new(*date)
-    @category_id = category_id
-    @account_id = account_id
+  def initialize(params)
+    @id = params['id']
+    @amount = params['amount'].to_f
+    @memo = params['memo']
+    @inflow = params['inflow']
+    @date = Date.new(*(params['date'].split('-').map(&:to_i))) # TODO REFACTOR
+    @category_id = params['category_id']
+    @account_id = params['account_id']
   end
 
   attr_reader :id, :amount, :memo, :inflow, :date, :category_id, :account_id
