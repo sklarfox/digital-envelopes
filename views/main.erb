@@ -11,10 +11,13 @@
   <tbody>
     <% @categories.each do |category| %>
       <tr>
-        <td><%= category.name %></td>
+        <td><a href="/category/<%= category.id %>"><%= category.name %></a></td>
         <td><%= category.assigned_amount%></td>
         <td><%= category.amount_remaining %></td>
         <td><button>Edit</button></td>
       </tr>
     <% end %>
   </tbody>
+</table>
+
+<h3><a href='/category/new'>Add New Category</h3>

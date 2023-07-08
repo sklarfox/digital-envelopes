@@ -23,6 +23,18 @@ helpers do
   def to_be_assigned
     @storage.sum_all_inflows - @storage.sum_all_assigned_amounts
   end
+
+  def sum(transactions)
+    transactions.inject(0) { |memo, transaction| memo + transaction.amount }
+  end
+end
+
+def error_for_category_name(name)
+  if !(1..30).cover? name.size
+    "Category name must be between 1 and 30 characters."
+  elsif @storage.all_categories.any? { |category| category.name == name }
+    "The category name must be unique."
+  end
 end
 
 before do
@@ -36,6 +48,24 @@ end
 get '/budget' do
   @categories = @storage.all_categories
   erb :main, layout: :layout
+end
+
+get '/category/new' do
+  erb :new_category, layout: :layout
+end
+
+post '/category/new' do
+  category_name = params[:category_name].strip
+
+  error = error_for_category_name(category_name)
+  if error
+    session[:error] = error
+    erb :new_category, layout: :layout
+  else
+    @storage.add_new_category(category_name)
+    session[:success] = "The category has been created."
+    redirect '/budget'
+  end
 end
 
 get '/category/:id' do

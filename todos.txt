@@ -1,5 +1,4 @@
 Steps to being done:
 
-1. Create a main page
 
   Replace buttons with forms to change allocated amount

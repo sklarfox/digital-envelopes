@@ -17,4 +17,11 @@
         <td><button>Edit</button></td>
       </tr>
     <% end %>
+    <tr>
+        <td><strong>Total</strong></td>
+        <td><strong><%= sum(@transactions)%></strong></td>
+    </tr>
   </tbody>
+</table>
+
+<a href='/budget'>Return to Overview</a>

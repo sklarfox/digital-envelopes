@@ -69,4 +69,9 @@ class DatabasePersistance
 
     Transaction.new(id, amount, memo, inflow, date, category_id, account_id)
   end
+
+  def add_new_category(name)
+    sql = 'INSERT INTO categories (name) VALUES ($1)'
+    query(sql, name)
+  end
 end

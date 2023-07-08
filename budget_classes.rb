@@ -22,7 +22,7 @@ end
 class Transaction
   def initialize(id, amount, memo, inflow, date, category_id, account_id)
     @id = id
-    @amount = amount
+    @amount = amount.to_f
     @memo = memo
     @inflow = inflow
     @date = Date.new(*date)
