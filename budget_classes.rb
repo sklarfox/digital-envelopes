@@ -20,7 +20,15 @@ class Category
 end
 
 class Transaction
-  def initialize(result)
-
+  def initialize(id, amount, memo, inflow, date, category_id, account_id)
+    @id = id
+    @amount = amount
+    @memo = memo
+    @inflow = inflow
+    @date = Date.new(*date)
+    @category_id = category_id
+    @account_id = account_id
   end
+
+  attr_reader :id, :amount, :memo, :inflow, :date, :category_id, :account_id
 end

@@ -1,0 +1,20 @@
+<h3><%= @category.name %></h3>
+
+<table>
+  <thead>
+    <tr>
+      <th><h4>Memo</h4></th>
+      <th><h4>Amount</h4></th>
+      <th><h4>Date</h4></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @transactions.each do |transaction| %>
+      <tr>
+        <td><%= transaction.memo %></td>
+        <td><%= transaction.amount%></td>
+        <td><%= transaction.date %></td>
+        <td><button>Edit</button></td>
+      </tr>
+    <% end %>
+  </tbody>

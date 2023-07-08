@@ -39,5 +39,8 @@ get '/budget' do
 end
 
 get '/category/:id' do
+  id = params[:id].to_i
+  @category = @storage.load_category(id)
+  @transactions = @storage.load_transactions_for_category(id)
   erb :category, layout: :layout
 end
