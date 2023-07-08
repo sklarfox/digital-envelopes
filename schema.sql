@@ -25,10 +25,10 @@ INSERT INTO accounts (name)
 VALUES ('Checking'), ('Savings');
 
 INSERT INTO categories (name, assigned_amount)
-VALUES ('Ready to Assign', 1000), ('Groceries', 300), ('Gas', 100);
+VALUES ('Groceries', 300), ('Gas', 100);
 
 INSERT INTO transactions (amount, memo, inflow, category_id, account_id)
 VALUES (3000.00, 'Starting Balance', true, 1, 1),
-       (200.00, 'Costco Run', false, 2, 1),
-       (75.00, 'Roadtrip', false, 3, 1)
+       (200.00, 'Costco Run', false, 1, 1),
+       (75.00, 'Roadtrip', false, 2, 1)
        ;
