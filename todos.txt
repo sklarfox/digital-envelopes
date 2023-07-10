@@ -1,4 +1,29 @@
 Steps to being done:
 
 
-  Replace buttons with forms to change allocated amount
+Accounts
+  CREATE - done
+  READ - done
+  UPDATE
+  DELETE
+
+Categories
+  CREATE - done
+  READ - done
+  UPDATE
+  DELETE
+
+Transactions
+  CREATE 
+  READ - done
+  UPDATE
+  DELETE
+
+  Paging
+
+  Sorting
+
+  Format 2 decimal places in all views. viewhelper method
+
+  TEesting conditions
+    inserting new transaction with and without memo

@@ -1,6 +1,7 @@
 require "sinatra"
 require "sinatra/content_for"
 require "tilt/erubis"
+require "date"
 require_relative 'budget_classes'
 require_relative "database_persistance"
 
@@ -50,6 +51,14 @@ def error_for_account_name(name)
   end
 end
 
+def error_for_amount(amount)
+  # TODO
+end
+
+def error_for_memo(memo)
+  # TODO
+end
+
 before do
   @storage = DatabasePersistance.new
 end
@@ -68,7 +77,7 @@ get '/category/new' do
   erb :new_category, layout: :layout
 end
 
-post '/category/new_name' do
+post '/category/new' do
   category_name = params[:category_name].strip
 
   error = error_for_category_name(category_name)
@@ -129,4 +138,29 @@ get '/account/:id' do
   @account = @storage.load_account(id)
   @transactions = @storage.load_transactions_for_account(id)
   erb :account, layout: :layout
+end
+
+get '/transaction/new' do
+  @accounts = @storage.all_accounts
+  @categories = @storage.all_categories
+  erb :new_transaction, layout: :layout 
+end
+
+post '/transaction/new' do
+  amount = params[:amount]
+  memo = params[:memo]
+  date = params[:date]
+  category_id = params[:category_id]
+  account_id = params[:account_id]
+
+  error = error_for_amount(amount) || error_for_memo(memo)
+
+  if error
+    session[:error] = error
+    erb :new_transaction, layout: :layout
+  else
+    @storage.add_new_transaction(amount, memo, date, category_id, account_id)
+    session[:success] = 'The transaction has been added.'
+    redirect '/budget'
+  end
 end

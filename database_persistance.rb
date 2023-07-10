@@ -95,17 +95,26 @@ class DatabasePersistance
   end
 
   def load_account(id)
-    sql = 'SELECT * FROM accounts WHERE id = $1'
+    sql = 'SELECT * FROM accounts WHERE id = $1;'
     result = query(sql, id).first
     tuple_to_account_object(result)
   end
 
   def load_transactions_for_account(id)
-    sql = 'SELECT * FROM transactions WHERE account_id = $1'
+    sql = 'SELECT * FROM transactions WHERE account_id = $1;'
     result = query(sql, id)
 
     result.map do |tuple|
       tuple_to_transaction_object(tuple)
     end
+  end
+
+  def add_new_transaction(amount, memo, date, category_id, account_id)
+    inflow = category_id == '1'
+    sql = <<~SQL
+      INSERT INTO transactions (amount, memo, inflow, date, category_id, account_id)
+      VALUES ($1, $2, $3, $4, $5, $6);
+    SQL
+    query(sql, amount, memo, inflow, date, category_id, account_id)
   end
 end
