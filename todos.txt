@@ -25,5 +25,7 @@ Transactions
 
   Format 2 decimal places in all views. viewhelper method
 
+  Fix current balance calculation method
+
   TEesting conditions
     inserting new transaction with and without memo

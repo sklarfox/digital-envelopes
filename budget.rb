@@ -52,7 +52,7 @@ def error_for_account_name(name)
 end
 
 def error_for_amount(amount)
-  binding.pry
+  # TODO Add a check for only digits
   if !amount.match?(/[0-9]+[.][0-9]{0,2}/)
     "Invalid format. Please try again."
   end
