@@ -52,11 +52,16 @@ def error_for_account_name(name)
 end
 
 def error_for_amount(amount)
-  # TODO
+  binding.pry
+  if !amount.match?(/[0-9]+[.][0-9]{0,2}/)
+    "Invalid format. Please try again."
+  end
 end
 
 def error_for_memo(memo)
-  # TODO
+  if memo.size > 100
+    'The memo must be less than 100 characters.'
+  end
 end
 
 before do
@@ -154,8 +159,9 @@ post '/transaction/new' do
   account_id = params[:account_id]
 
   error = error_for_amount(amount) || error_for_memo(memo)
-
   if error
+    @accounts = @storage.all_accounts
+    @categories = @storage.all_categories
     session[:error] = error
     erb :new_transaction, layout: :layout
   else
