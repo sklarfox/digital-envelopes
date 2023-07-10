@@ -13,6 +13,8 @@
   </tr>
 </table>
 
+<h3>Transactions:</h3>
+
 <table>
   <thead>
     <tr>
@@ -22,6 +24,9 @@
     </tr>
   </thead>
   <tbody>
+    <% if @transactions.empty? %>
+      <p>No transactions to show!</p>
+    <% end %>
     <% @transactions.each do |transaction| %>
       <tr>
         <td><%= transaction.memo %></td>

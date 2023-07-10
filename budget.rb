@@ -42,6 +42,14 @@ def error_for_allocation_amount(amount)
   return "The allocation amount must be greater than 0." unless amount >= 0
 end
 
+def error_for_account_name(name)
+  if !(1..30).cover? name.size
+    "Account name must be between 1 and 30 characters."
+  elsif @storage.all_accounts.any? { |account| account.name == name }
+    "The account name must be unique."
+  end
+end
+
 before do
   @storage = DatabasePersistance.new
 end
@@ -52,6 +60,7 @@ end
 
 get '/budget' do
   @categories = @storage.all_categories
+  @accounts = @storage.all_accounts
   erb :main, layout: :layout
 end
 
@@ -82,9 +91,9 @@ post '/category/:id/new_allocation' do
     session[:error] = error
     erb :category, layout: :layout
   else
-    session[:success] = "The allocated amount has been updated."
-    @storage.set_category_allocated_amount(amount, id)
-    redirect "budget"
+    session[:success] = "The assigned amount has been updated."
+    @storage.set_category_assigned_amount(amount, id)
+    redirect "/budget"
   end
 end
 
@@ -93,4 +102,23 @@ get '/category/:id' do
   @category = @storage.load_category(id)
   @transactions = @storage.load_transactions_for_category(id)
   erb :category, layout: :layout
+end
+
+get '/account/new' do
+  erb :new_account, layout: :layout
+end
+
+post '/account/new' do
+  account_name = params[:account_name]
+
+  error = error_for_account_name(account_name)
+
+  if error
+    session[:error] = error
+    erb :category, layout: :layout
+  else
+    session[:success] = "The account has been created."
+    @storage.add_new_account(account_name)
+    redirect "/budget"
+  end
 end

@@ -1,10 +1,11 @@
 class Account
-  def initialize(id, name)
-    @id = id
-    @name = name
+  def initialize(params)
+    @id = params['id']
+    @name = params['name']
+    @balance = 1000 # TODO
   end
 
-  attr_reader :id, :name
+  attr_reader :id, :name, :balance
 end
 
 class Category

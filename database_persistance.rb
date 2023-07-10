@@ -33,6 +33,15 @@ class DatabasePersistance
     end
   end
 
+  def all_accounts
+    sql = "SELECT * FROM accounts;"
+    result = query(sql)
+
+    result.map do |tuple|
+      tuple_to_account_object(tuple)
+    end
+  end
+
   def sum_category_transactions(category_id)
     sql = <<~SQL
       SELECT sum(amount) FROM transactions
@@ -66,13 +75,22 @@ class DatabasePersistance
     Transaction.new(tuple)
   end
 
+  def tuple_to_account_object(tuple)
+    Account.new(tuple)
+  end
+
   def add_new_category(name)
-    sql = 'INSERT INTO categories (name) VALUES ($1)'
+    sql = 'INSERT INTO categories (name) VALUES ($1);'
     query(sql, name)
   end
 
-  def set_category_allocated_amount(amount, id)
-    sql = 'UPDATE categories SET assigned_amount = $1 WHERE id = $2'
+  def set_category_assigned_amount(amount, id)
+    sql = 'UPDATE categories SET assigned_amount = $1 WHERE id = $2;'
     query(sql, amount, id)
+  end
+
+  def add_new_account(name)
+    sql = 'INSERT INTO accounts (name) VALUES ($1);'
+    query(sql, name)
   end
 end

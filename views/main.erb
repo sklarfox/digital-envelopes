@@ -25,4 +25,22 @@
   </tbody>
 </table>
 
-<h3><a href='/category/new'>Add New Category</h3>
+<h3>Accounts</h3>
+
+<table>
+  <thead>
+    <tr>
+      <td><h4>Acccount</h4></td>
+      <td><h4>Current Balance</h4></td>
+    </tr>
+  </thead>
+    <% @accounts.each do |account| %>
+      <tr>
+        <td><%= account.name %></td>
+        <td><%= account.balance %></td>
+      </tr>
+    <% end %>
+</table>
+
+<h4><a href='/category/new'>Add New Category</h4>
+<h4><a href='/account/new'>Create New Account</h4>
