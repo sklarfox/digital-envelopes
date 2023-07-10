@@ -52,8 +52,8 @@ def error_for_account_name(name)
 end
 
 def error_for_amount(amount)
-  # TODO Add a check for only digits
-  if !amount.match?(/[0-9]+[.][0-9]{0,2}/)
+  if !amount.chars.all? { |char| char.match?(/\d/) }
+    !amount.match?(/[0-9]+[.][0-9]{0,2}/)
     "Invalid format. Please try again."
   end
 end
@@ -116,6 +116,29 @@ get '/category/:id' do
   @category = @storage.load_category(id)
   @transactions = @storage.load_transactions_for_category(id)
   erb :category, layout: :layout
+end
+
+get '/category/:id/edit' do
+  id = params[:id].to_i
+  @category = @storage.load_category(id)
+  erb :edit_category, layout: :layout
+end
+
+post '/category/:id/edit' do
+  id = params[:id].to_i
+  new_category_name = params[:new_category_name]
+  @category = @storage.load_category(id)
+
+  error = error_for_category_name(new_category_name) unless @category.name == new_category_name
+
+  if error
+    session[:error] = error
+    erb :edit_category, layout: :layout
+  else
+    @storage.change_category_name(id, new_category_name)
+    session[:success] = 'The category name has been updated.'
+    redirect "/category/#{@category.id}"
+  end
 end
 
 get '/account/new' do

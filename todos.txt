@@ -19,13 +19,13 @@ Transactions
   UPDATE
   DELETE
 
-  Paging
+  Pagination
 
   Sorting
 
   Format 2 decimal places in all views. viewhelper method
 
-  Fix current balance calculation method
+  Fix current balance calculation method for accounts
 
-  TEesting conditions
+  Testing conditions
     inserting new transaction with and without memo
