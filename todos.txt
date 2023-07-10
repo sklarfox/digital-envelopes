@@ -4,7 +4,7 @@ Steps to being done:
 Accounts
   CREATE - done
   READ - done
-  UPDATE
+  UPDATE - done
   DELETE
 
 Categories
@@ -16,7 +16,7 @@ Categories
 Transactions
   CREATE - done
   READ - done
-  UPDATE
+  UPDATE - current
   DELETE
 
   Pagination
@@ -27,5 +27,6 @@ Transactions
 
   Fix current balance calculation method for accounts
 
+  Make sure inputs aren't lost when there is an error when submitting any information. scan CU for each item
   Testing conditions
     inserting new transaction with and without memo

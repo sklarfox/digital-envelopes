@@ -25,7 +25,7 @@ class DatabasePersistance
   end
 
   def all_categories
-    sql = "SELECT * FROM categories WHERE name != 'Inflow' ORDER BY name;"
+    sql = "SELECT * FROM categories ORDER BY name;"
     result = query(sql)
 
     result.map do |tuple|
@@ -126,5 +126,16 @@ class DatabasePersistance
   def change_account_name(id, new_name)
     sql = 'UPDATE accounts SET name = $1 WHERE id = $2;'
     query(sql, new_name, id)
+  end
+
+  def load_transaction(id)
+    sql = <<~SQL
+    SELECT * FROM transactions
+      JOIN accounts ON account_id = accounts.id
+      JOIN categories ON category_id = categories.id
+      WHERE transactions.id = $1;
+    SQL
+
+    query(sql, id).first
   end
 end

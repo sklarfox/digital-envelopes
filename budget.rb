@@ -52,10 +52,11 @@ def error_for_account_name(name)
 end
 
 def error_for_amount(amount)
-  if !amount.chars.all? { |char| char.match?(/\d/) }
-    !amount.match?(/[0-9]+[.][0-9]{0,2}/)
-    "Invalid format. Please try again."
+  if amount.chars.all? { |char| char.match?(/\d/) } ||
+     amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
+     return
   end
+  "Invalid currency format. Please try again."
 end
 
 def error_for_memo(memo)
@@ -197,7 +198,7 @@ get '/transaction/new' do
 end
 
 post '/transaction/new' do
-  amount = params[:amount]
+  amount = params[:amount].strip
   memo = params[:memo]
   date = params[:date]
   category_id = params[:category_id]
@@ -214,4 +215,13 @@ post '/transaction/new' do
     session[:success] = 'The transaction has been added.'
     redirect '/budget'
   end
+end
+
+get '/transaction/:id/edit' do
+  id = params[:id].to_i
+  @transaction = @storage.load_transaction(id)
+  @categories = @storage.all_categories
+  @accounts = @storage.all_accounts
+
+  erb :edit_transaction, layout: :layout
 end

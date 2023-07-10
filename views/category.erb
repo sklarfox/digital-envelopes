@@ -32,7 +32,7 @@
         <td><%= transaction.memo %></td>
         <td>$<%= transaction.amount%></td>
         <td><%= transaction.date %></td>
-        <td><button>Edit</button></td>
+        <td><a href='/transaction/<%= transaction.id %>/edit'>Edit</a></td>
       </tr>
     <% end %>
     <tr>

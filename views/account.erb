@@ -29,6 +29,7 @@
           <td>$<%= transaction.amount %></td>
         <% end %>
         <td><%= transaction.date %></td>
+        <td><a href='/transaction/<%= transaction.id %>/edit'>Edit</a></td>
       </tr>
     <% end %>
   </tbody>
