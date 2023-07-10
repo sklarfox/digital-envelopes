@@ -119,7 +119,12 @@ class DatabasePersistance
   end
 
   def change_category_name(id, new_name)
-    sql = 'UPDATE categories SET name = $1 WHERE id = $2'
+    sql = 'UPDATE categories SET name = $1 WHERE id = $2;'
+    query(sql, new_name, id)
+  end
+
+  def change_account_name(id, new_name)
+    sql = 'UPDATE accounts SET name = $1 WHERE id = $2;'
     query(sql, new_name, id)
   end
 end

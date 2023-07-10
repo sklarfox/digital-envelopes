@@ -158,7 +158,29 @@ post '/account/new' do
     @storage.add_new_account(account_name)
     redirect "/budget"
   end
+end
 
+get '/account/:id/edit' do
+  id = params[:id].to_i
+  @account = @storage.load_account(id)
+  erb :edit_account, layout: :layout
+end
+
+post '/account/:id/edit' do
+  id = params[:id].to_i
+  new_account_name = params[:new_account_name]
+  @account = @storage.load_account(id)
+
+  error = error_for_account_name(new_account_name) unless @account.name == new_account_name
+
+  if error
+    session[:error] = error
+    erb :edit_account, layout: :layout
+  else
+    @storage.change_account_name(id, new_account_name)
+    session[:success] = 'The account name has been updated.'
+    redirect "/account/#{@account.id}"
+  end
 end
 
 get '/account/:id' do

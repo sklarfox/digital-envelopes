@@ -10,7 +10,7 @@ Accounts
 Categories
   CREATE - done
   READ - done
-  UPDATE
+  UPDATE - done
   DELETE
 
 Transactions
