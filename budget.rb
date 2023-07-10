@@ -121,4 +121,12 @@ post '/account/new' do
     @storage.add_new_account(account_name)
     redirect "/budget"
   end
+
+end
+
+get '/account/:id' do
+  id = params['id'].to_i
+  @account = @storage.load_account(id)
+  @transactions = @storage.load_transactions_for_account(id)
+  erb :account, layout: :layout
 end

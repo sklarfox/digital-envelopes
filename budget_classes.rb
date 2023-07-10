@@ -32,7 +32,7 @@ class Transaction
     @id = params['id']
     @amount = params['amount'].to_f
     @memo = params['memo']
-    @inflow = params['inflow']
+    @inflow = params['inflow'] == 't'
     @date = Date.new(*(params['date'].split('-').map(&:to_i))) # TODO REFACTOR
     @category_id = params['category_id']
     @account_id = params['account_id']

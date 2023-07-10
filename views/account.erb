@@ -1,0 +1,37 @@
+<h3><%= @account.name %></h3>
+
+<h3>Transactions:</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th><h4>Memo</h4></th>
+      <th><h4>Inflow</h4></th>
+      <th><h4>Outflow</h4></th>
+      <th><h4>Date</h4></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @transactions.empty? %>
+      <tr><td colspan='4'>No transactions to show!</td></tr>
+    <% end %>
+    <% @transactions.each do |transaction| %>
+      <tr>
+        <td><%= transaction.memo %></td>
+        <% if transaction.inflow %>
+          <td>$<%= transaction.amount %></td>
+        <% else %>
+          <td></td>
+        <% end %>
+        <% if transaction.inflow %>
+          <td></td>
+        <% else %>
+          <td>$<%= transaction.amount %></td>
+        <% end %>
+        <td><%= transaction.date %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<a href='/budget'>Return to Overview</a>
