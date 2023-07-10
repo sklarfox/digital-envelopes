@@ -14,7 +14,7 @@ Categories
   DELETE
 
 Transactions
-  CREATE 
+  CREATE - done
   READ - done
   UPDATE
   DELETE
