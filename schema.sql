@@ -15,8 +15,8 @@ CREATE TABLE transactions (
   memo text,
   inflow boolean NOT NULL DEFAULT false,
   date date NOT NULL DEFAULT CURRENT_DATE,
-  category_id int NOT NULL REFERENCES categories (id),
-  account_id int NOT NULL REFERENCES categories (id)
+  category_id int NOT NULL REFERENCES categories (id) ON DELETE CASCADE,
+  account_id int NOT NULL REFERENCES accounts (id) ON DELETE CASCADE
 );
 
 -- DEVELY DATA BELOW

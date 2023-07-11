@@ -4,3 +4,7 @@
       <input type='submit' value='Save'>
       <a href='/category/<%= @category.id %>'>Cancel</a>
 </form>
+
+<form action='/category/<%= @category.id %>/delete' method='post'>
+  <button type ='submit'>Delete Category</button>
+</form>

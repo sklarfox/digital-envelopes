@@ -112,6 +112,10 @@ post '/category/:id/new_allocation' do
   end
 end
 
+get '/category/1' do
+  redirect '/budget'
+end
+
 get '/category/:id' do
   id = params[:id].to_i
   @category = @storage.load_category(id)
@@ -245,5 +249,22 @@ post '/transaction/:id/edit' do
     session[:success] = 'The transaction has been updated.'
     redirect '/budget'
   end
+end
 
+post '/account/:id/delete' do
+  id = params['id'].to_i
+  @storage.delete_account(id)
+  redirect '/budget'
+end
+
+post '/category/:id/delete' do
+  id = params['id'].to_i
+  @storage.delete_category(id)
+  redirect '/budget'
+end
+
+post '/transaction/:id/delete' do
+  id = params['id'].to_i
+  @storage.delete_transaction(id)
+  redirect '/budget'
 end

@@ -158,4 +158,19 @@ class DatabasePersistance
     SQL
     query(sql, amount, memo, inflow, date, category_id, account_id, id)
   end
+
+  def delete_account(id)
+    sql = 'DELETE FROM accounts WHERE id = $1'
+    query(sql, id)
+  end
+
+  def delete_category(id)
+    sql = 'DELETE FROM categories WHERE id = $1'
+    query(sql, id)
+  end
+
+  def delete_transaction(id)
+    sql = 'DELETE FROM transactions WHERE id = $1'
+    query(sql, id)
+  end
 end

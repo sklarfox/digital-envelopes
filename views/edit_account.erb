@@ -4,3 +4,7 @@
       <input type='submit' value='Save'>
       <a href='/account/<%= @account.id %>'>Cancel</a>
 </form>
+
+<form action='/account/<%= @account.id %>/delete' method='post'>
+  <button type ='submit'>Delete Account</button>
+</form>
