@@ -130,12 +130,32 @@ class DatabasePersistance
 
   def load_transaction(id)
     sql = <<~SQL
-    SELECT * FROM transactions
-      JOIN accounts ON account_id = accounts.id
-      JOIN categories ON category_id = categories.id
-      WHERE transactions.id = $1;
+    SELECT t.id, t.amount, t.memo, t.inflow, t.date, 
+           t.category_id, t.account_id,
+           a.name AS account_name,
+           c.name AS category_name
+    FROM transactions AS t
+    JOIN accounts AS a ON account_id = a.id
+    JOIN categories AS c ON category_id = c.id
+    WHERE t.id = $1;
     SQL
-
+    
     query(sql, id).first
+  end
+
+  def change_transaction_details(amount, memo, date, category_id, account_id, id)
+    inflow = category_id == '1'
+
+    sql = <<~SQL
+      UPDATE transactions
+      SET amount = $1,
+          memo = $2,
+          inflow = $3,
+          date = $4,
+          category_id = $5,
+          account_id = $6
+          WHERE id = $7;
+    SQL
+    query(sql, amount, memo, inflow, date, category_id, account_id, id)
   end
 end

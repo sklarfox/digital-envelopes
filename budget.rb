@@ -222,6 +222,28 @@ get '/transaction/:id/edit' do
   @transaction = @storage.load_transaction(id)
   @categories = @storage.all_categories
   @accounts = @storage.all_accounts
-
   erb :edit_transaction, layout: :layout
+end
+
+post '/transaction/:id/edit' do
+  id = params[:id].to_i
+  amount = params[:amount].strip
+  memo = params[:memo]
+  date = params[:date]
+  category_id = params[:category_id]
+  account_id = params[:account_id]
+
+  error = error_for_amount(amount) || error_for_memo(memo)
+
+  if error
+    @accounts = @storage.all_accounts
+    @categories = @storage.all_categories
+    session[:error] = error
+    erb :new_transaction, layout: :layout
+  else
+    @storage.change_transaction_details(amount, memo, date, category_id, account_id, id)
+    session[:success] = 'The transaction has been updated.'
+    redirect '/budget'
+  end
+
 end
