@@ -106,23 +106,6 @@ class DatabasePersistance
     }
   end
 
-  def tuple_to_category_object_DEPRECATED(tuple) #TODO REMOVE
-    id = tuple['id']
-    name = tuple['name']
-    assigned_amount = tuple['assigned_amount'].to_f
-    amount_remaining = assigned_amount - sum_category_transactions(id)
-
-    Category.new(id, name, assigned_amount, amount_remaining)
-  end
-
-  def tuple_to_transaction_object_DEPRECATED(tuple)
-    Transaction.new(tuple)
-  end
-
-  def tuple_to_account_object_DEPRECATED(tuple)
-    Account.new(tuple)
-  end
-
   def add_new_category(name)
     sql = 'INSERT INTO categories (name) VALUES ($1);'
     query(sql, name)
