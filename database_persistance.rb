@@ -13,11 +13,10 @@ class DatabasePersistance
 
   def load_category(id)
     sql = <<~SQL
-      SELECT categories.*, 
+      SELECT categories.*,
              assigned_amount - sum(transactions.amount) AS amount_remaining,
              sum(transactions.amount) AS transaction_total
-        FROM categories
-        LEFT JOIN transactions ON categories.id = category_id
+        FROM categories LEFT JOIN transactions ON categories.id = category_id
         WHERE categories.id = $1
         GROUP BY categories.id;
     SQL
@@ -27,43 +26,32 @@ class DatabasePersistance
 
   def all_categories
     sql = <<~SQL
-          SELECT categories.*, 
-                 assigned_amount - COALESCE(sum(transactions.amount), 0) 
-                   AS amount_remaining,
-                 sum(transactions.amount) 
-                   AS transaction_total
-          FROM categories
-          LEFT JOIN transactions 
-            ON categories.id = category_id
-          GROUP BY categories.id;
+    SELECT categories.*,
+    assigned_amount - COALESCE(sum(transactions.amount), 0) AS amount_remaining,
+    sum(transactions.amount) AS transaction_total
+    FROM categories LEFT JOIN transactions ON categories.id = category_id
+    GROUP BY categories.id;
     SQL
     result = query(sql)
-
-    result.map do |tuple|
-      tuple_to_category_hash(tuple)
-    end
+    result.map { |tuple| tuple_to_category_hash(tuple) }
   end
 
   def all_accounts
     sql = <<~SQL
-          SELECT accounts.*, 
-            COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0)
-              AS balance
-          FROM accounts 
-          LEFT JOIN transactions AS t
-            ON accounts.id = t.account_id
-          GROUP BY accounts.id
-          ORDER BY accounts.name;
+        SELECT accounts.*,
+          COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0)
+            AS balance
+        FROM accounts LEFT JOIN transactions AS t ON accounts.id = t.account_id
+        GROUP BY accounts.id
+        ORDER BY accounts.name;
     SQL
     result = query(sql)
 
-    result.map do |tuple|
-      tuple_to_account_hash(tuple)
-    end
+    result.map { |tuple| tuple_to_account_hash(tuple) }
   end
 
   def to_be_assigned
-    self.sum_all_inflows - self.sum_all_assigned_amounts
+    sum_all_inflows - sum_all_assigned_amounts
   end
 
   def sum_all_inflows
@@ -80,8 +68,7 @@ class DatabasePersistance
     { id: tuple['id'].to_i,
       name: tuple['name'],
       assigned_amount: tuple['assigned_amount'],
-      amount_remaining: tuple['amount_remaining']
-    }
+      amount_remaining: tuple['amount_remaining'] }
   end
 
   def tuple_to_transaction_hash(tuple)
@@ -91,15 +78,13 @@ class DatabasePersistance
       inflow: tuple['inflow'] == 't',
       date: Date.new(*(tuple['date'].split('-').map(&:to_i))),
       category_id: tuple['category_id'],
-      account_id: tuple['account_id']
-    }
+      account_id: tuple['account_id'] }
   end
 
   def tuple_to_account_hash(tuple)
     { id: tuple['id'],
       name: tuple['name'],
-      balance: tuple['balance']
-    }
+      balance: tuple['balance'] }
   end
 
   def add_new_category(name)
@@ -119,14 +104,12 @@ class DatabasePersistance
 
   def load_account(id)
     sql = <<~SQL
-          SELECT accounts.*, 
+          SELECT accounts.*,
                  COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
-          FROM accounts 
-          LEFT JOIN transactions AS t
-            ON accounts.id = t.account_id
+          FROM accounts
+          LEFT JOIN transactions AS t ON accounts.id = t.account_id
           WHERE accounts.id = $1
-          GROUP BY accounts.id
-          ORDER BY accounts.name;
+          GROUP BY accounts.id ORDER BY accounts.name;
     SQL
     result = query(sql, id).first
     tuple_to_account_hash(result)
@@ -138,7 +121,7 @@ class DatabasePersistance
       WHERE account_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    result / 10 + 1
+    (result / 10) + 1
   end
 
   def max_category_page_number(id)
@@ -147,12 +130,16 @@ class DatabasePersistance
       WHERE category_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    result / 10 + 1
+    (result / 10) + 1
   end
 
   def load_transactions_for_account(id, page)
-    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date DESC, id LIMIT $2 OFFSET $3;'
-    offset = page * 10 - 10
+    sql = <<~SQL
+      SELECT * FROM transactions
+      WHERE account_id = $1
+      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+    SQL
+    offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
 
     result.map do |tuple|
@@ -161,8 +148,12 @@ class DatabasePersistance
   end
 
   def load_transactions_for_category(id, page)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date DESC, id LIMIT $2 OFFSET $3;'
-    offset = page * 10 - 10
+    sql = <<~SQL
+      SELECT * FROM transactions
+      WHERE category_id = $1
+      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+    SQL
+    offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
 
     result.map do |tuple|
@@ -191,33 +182,29 @@ class DatabasePersistance
 
   def load_transaction(id)
     sql = <<~SQL
-    SELECT t.id, t.amount, t.memo, t.inflow, t.date, 
+    SELECT t.id, t.amount, t.memo, t.inflow, t.date,
            t.category_id, t.account_id,
-           a.name AS account_name,
-           c.name AS category_name
+           a.name AS account_name, c.name AS category_name
     FROM transactions AS t
     JOIN accounts AS a ON account_id = a.id
     JOIN categories AS c ON category_id = c.id
     WHERE t.id = $1;
     SQL
-    
+
     tuple_to_transaction_hash(query(sql, id).first)
   end
 
-  def change_transaction_details(amount, memo, date, category_id, account_id, id)
-    inflow = category_id == '1'
+  def change_transaction_details(amount, memo, date, cat_id, acc_id, id)
+    inflow = cat_id == '1'
 
     sql = <<~SQL
       UPDATE transactions
-      SET amount = $1,
-          memo = $2,
-          inflow = $3,
-          date = $4,
-          category_id = $5,
-          account_id = $6
-          WHERE id = $7;
+      SET amount = $1, memo = $2,
+          inflow = $3, date = $4,
+          category_id = $5, account_id = $6
+      WHERE id = $7;
     SQL
-    query(sql, amount, memo, inflow, date, category_id, account_id, id)
+    query(sql, amount, memo, inflow, date, cat_id, acc_id, id)
   end
 
   def delete_account(id)

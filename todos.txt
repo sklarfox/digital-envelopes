@@ -36,7 +36,9 @@ Transactions
 
   create backup data verification for any required fields
 
-change sort order by date
+  change sort order by date
+  
+  fix acct total
 
 
 
