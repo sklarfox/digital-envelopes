@@ -24,7 +24,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_category(id)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id;'
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id LIMIT 10;'
     result = query(sql, id)
 
     result.map do |tuple|
@@ -43,12 +43,13 @@ class DatabasePersistance
 
   def all_accounts
     sql = <<~SQL
-    SELECT accounts.*, COALESCE(SUM(t.amount), 0) AS balance 
-      FROM accounts 
-      LEFT JOIN (SELECT * FROM transactions WHERE inflow = true) AS t 
-        ON accounts.id = account_id 
-      GROUP BY accounts.id
-      ORDER BY accounts.name;
+    SELECT accounts.*, 
+       COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
+    FROM accounts 
+    LEFT JOIN transactions AS t
+      ON accounts.id = t.account_id
+    GROUP BY accounts.id
+    ORDER BY accounts.name;
   SQL
     result = query(sql)
 
