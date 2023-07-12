@@ -60,6 +60,8 @@ end
 def error_for_amount(amount)
   if amount.to_f.negative?
     'The amount must be greater than 0.'
+  elsif amount.to_f >= 100000000.00
+    'The amount must be less than 99,999,999.99'
   elsif amount.chars.all? { |char| char.match?(/\d/) } ||
         amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
     nil
