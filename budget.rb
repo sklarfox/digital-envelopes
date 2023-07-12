@@ -29,6 +29,10 @@ helpers do
   def sum(transactions)
     transactions.inject(0) { |memo, transaction| memo + transaction.amount }
   end
+
+  def format_currency(amount)
+    format('%.2f', amount)
+  end
 end
 
 def error_for_category_name(name)

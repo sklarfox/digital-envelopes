@@ -2,22 +2,22 @@ Steps to being done:
 
 
 Accounts
-  CREATE - done
-  READ - done
-  UPDATE - done
-  DELETE
+  CREATE - DONEZO BABY
+  READ - DONEZO BABY
+  UPDATE - DONEZO BABY
+  DELETE - DONEZO BABY
 
 Categories
-  CREATE - done
-  READ - done
-  UPDATE - done
-  DELETE
+  CREATE - DONEZO BABY
+  READ - DONEZO BABY
+  UPDATE - DONEZO BABY
+  DELETE - DONEZO BABY
 
 Transactions
-  CREATE - done
-  READ - done
-  UPDATE - current
-  DELETE
+  CREATE - DONEZO BABY
+  READ - DONEZO BABY
+  UPDATE - DONEZO BABY
+  DELETE - DONEZO BABY
 
   Pagination
 
