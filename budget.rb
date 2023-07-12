@@ -2,7 +2,6 @@ require "sinatra"
 require "sinatra/content_for"
 require "tilt/erubis"
 require "date"
-require_relative 'budget_classes'
 require_relative "database_persistance"
 
 require 'pry'
@@ -18,7 +17,6 @@ end
 configure(:development) do
   require "sinatra/reloader"
   also_reload "database_persistance.rb"
-  also_reload "budget_classes.rb"
 end
 
 helpers do

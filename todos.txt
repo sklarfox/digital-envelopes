@@ -29,22 +29,16 @@ Transactions
 
   DONE - Pagination
 
+  DONE - change sort order by date
+____________________________________________________________________________
+
 
   Add error checking for transaction date (if circumvented HTML validation)
 
   Add error checking for too large of a value in amounts
 
-  create backup data verification for any required fields
-
-  change sort order by date
-  
-  fix acct total
-
 
 
   MAJOR FEATURES
-
-
-  Add support to display multiple error messages, esp with transaction
 
   Add authentication
