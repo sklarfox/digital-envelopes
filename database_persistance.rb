@@ -43,14 +43,14 @@ class DatabasePersistance
 
   def all_accounts
     sql = <<~SQL
-    SELECT accounts.*, 
-       COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
-    FROM accounts 
-    LEFT JOIN transactions AS t
-      ON accounts.id = t.account_id
-    GROUP BY accounts.id
-    ORDER BY accounts.name;
-  SQL
+          SELECT accounts.*, 
+            COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
+          FROM accounts 
+          LEFT JOIN transactions AS t
+            ON accounts.id = t.account_id
+          GROUP BY accounts.id
+          ORDER BY accounts.name;
+    SQL
     result = query(sql)
 
     result.map do |tuple|
@@ -115,12 +115,14 @@ class DatabasePersistance
 
   def load_account(id)
     sql = <<~SQL
-      SELECT accounts.*, COALESCE(SUM(t.amount), 0) AS balance 
-        FROM accounts 
-        LEFT JOIN (SELECT * FROM transactions WHERE inflow = true) AS t 
-          ON accounts.id = account_id 
-        WHERE accounts.id = $1
-        GROUP BY accounts.id;
+          SELECT accounts.*, 
+                 COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
+          FROM accounts 
+          LEFT JOIN transactions AS t
+            ON accounts.id = t.account_id
+          WHERE accounts.id = $1
+          GROUP BY accounts.id
+          ORDER BY accounts.name;
     SQL
     result = query(sql, id).first
     tuple_to_account_hash(result)

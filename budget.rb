@@ -28,7 +28,7 @@ helpers do
 
   def format_currency(amount)
     return unless amount
-    format('%.2f', amount)
+    '$' + format('%.2f', amount)
   end
 end
 

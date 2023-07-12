@@ -1,6 +1,7 @@
 <h3><a href='/account/<%= @account[:id] %>/edit'><%= @account[:name] %></a></h3>
 
-<h3>Transactions:</h3>
+<h4>Current balance: <%= format_currency(@account[:balance]) %>
+<h4>Transactions:</h3>
 
 <table>
   <thead>
@@ -19,14 +20,14 @@
           <tr>
             <td><%= transaction[:memo] %></td>
             <% if transaction[:inflow] %>
-              <td>$<%= transaction[:amount] %></td>
+              <td><%= format_currency(transaction[:amount]) %></td>
             <% else %>
               <td></td>
             <% end %>
             <% if transaction[:inflow] %>
               <td></td>
             <% else %>
-              <td>$<%= transaction[:amount] %></td>
+              <td><%= format_currency(transaction[:amount]) %></td>
             <% end %>
             <td><%= transaction[:date] %></td>
             <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
