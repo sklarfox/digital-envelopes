@@ -10,25 +10,25 @@ class DatabasePersistance
   end
 
   def load_category(id)
-    sql = 'SELECT * FROM categories WHERE id = $1;'
+    sql = <<~SQL
+      SELECT categories.*, 
+             assigned_amount - sum(transactions.amount) AS amount_remaining,
+             sum(transactions.amount) AS transaction_total
+        FROM categories
+        LEFT JOIN transactions ON categories.id = category_id
+        WHERE categories.id = $1
+        GROUP BY categories.id;
+    SQL
     result = query(sql, id)
     tuple_to_category_hash(result.first)
   end
 
   def load_transactions_for_category(id)
-    sql = <<~SQL
-    SELECT categories.*, 
-           assigned_amount - sum(transactions.amount) AS amount_remaining
-      FROM categories
-      JOIN transactions ON categories.id = category_id
-      WHERE categories.id = 4
-      GROUP BY categories.id;
-    SQL
-    
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date;'
     result = query(sql, id)
 
     result.map do |tuple|
-      tuple_to_transaction_object(tuple)
+      tuple_to_transaction_hash(tuple)
     end
   end
 
@@ -42,11 +42,17 @@ class DatabasePersistance
   end
 
   def all_accounts
-    sql = "SELECT * FROM accounts;"
+    sql = <<~SQL
+      SELECT accounts.*, COALESCE(SUM(transactions.amount), 0) AS balance
+        FROM accounts
+        LEFT JOIN transactions ON accounts.id = account_id
+        GROUP BY accounts.id
+        ORDER BY accounts.name;
+    SQL
     result = query(sql)
 
     result.map do |tuple|
-      tuple_to_account_object(tuple)
+      tuple_to_account_hash(tuple)
     end
   end
 
@@ -58,6 +64,10 @@ class DatabasePersistance
 
     result = query(sql, category_id)
     result.first['sum'].to_f
+  end
+
+  def to_be_assigned
+    self.sum_all_inflows - self.sum_all_assigned_amounts
   end
 
   def sum_all_inflows
@@ -83,7 +93,7 @@ class DatabasePersistance
       amount: tuple['amount'],
       memo: tuple['memo'],
       inflow: tuple['inflow'] == 't',
-      date: Date.new(*(params['date'].split('-').map(&:to_i))), # TODO REFACTOR
+      date: Date.new(*(tuple['date'].split('-').map(&:to_i))), # TODO REFACTOR
       category_id: tuple['category_id'],
       account_id: tuple['account_id']
     }
@@ -129,17 +139,23 @@ class DatabasePersistance
   end
 
   def load_account(id)
-    sql = 'SELECT * FROM accounts WHERE id = $1;'
+    sql = <<~SQL
+      select accounts.*, COALESCE(SUM(transactions.amount), 0) AS balance
+      FROM accounts
+      LEFT JOIN transactions ON accounts.id = account_id
+      WHERE accounts.id = $1
+      GROUP BY accounts.id;
+    SQL
     result = query(sql, id).first
-    tuple_to_account_object(result)
+    tuple_to_account_hash(result)
   end
 
   def load_transactions_for_account(id)
-    sql = 'SELECT * FROM transactions WHERE account_id = $1;'
+    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date;'
     result = query(sql, id)
 
     result.map do |tuple|
-      tuple_to_transaction_object(tuple)
+      tuple_to_transaction_hash(tuple)
     end
   end
 
@@ -174,7 +190,7 @@ class DatabasePersistance
     WHERE t.id = $1;
     SQL
     
-    query(sql, id).first
+    tuple_to_transaction_hash(query(sql, id).first)
   end
 
   def change_transaction_details(amount, memo, date, category_id, account_id, id)

@@ -10,9 +10,9 @@
       <select name="category_id">
         <% @categories.each do |category| %>
           <% if category[:id] == params['category_id'] %>
-            <option value='<%= category[:id] %>' selected><%= category[:id] %></option>
+            <option value='<%= category[:id] %>' selected><%= category[:name] %></option>
           <% else %>
-            <option value='<%= category[:id] %>'><%= category[:id] %></option>
+            <option value='<%= category[:id] %>'><%= category[:name] %></option>
           <% end %>
         <% end %>
       </select>
@@ -21,9 +21,9 @@
       <select name="account_id">
         <% @accounts.each do |account| %>
           <% if account[:id] == params['account_id'] %>
-            <option value='<%= account[:id] %>' selected><%= account[:id] %></option>
+            <option value='<%= account[:id] %>' selected><%= account[:name] %></option>
           <% else %>
-            <option value='<%= account[:id] %>'><%= account[:id] %></option>
+            <option value='<%= account[:id] %>'><%= account[:name] %></option>
           <% end %>
         <% end %>
       </select>

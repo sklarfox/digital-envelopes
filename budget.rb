@@ -22,10 +22,6 @@ configure(:development) do
 end
 
 helpers do
-  def to_be_assigned
-    @storage.sum_all_inflows - @storage.sum_all_assigned_amounts
-  end
-
   def sum(transactions)
     transactions.inject(0) { |memo, transaction| memo + transaction.amount }
   end
@@ -38,7 +34,7 @@ end
 def error_for_category_name(name)
   if !(1..30).cover? name.size
     "Category name must be between 1 and 30 characters."
-  elsif @storage.all_categories.any? { |category| category.name == name }
+  elsif @storage.all_categories.any? { |category| category[:name] == name }
     "The category name must be unique."
   end
 end
@@ -50,7 +46,7 @@ end
 def error_for_account_name(name)
   if !(1..30).cover? name.size
     "Account name must be between 1 and 30 characters."
-  elsif @storage.all_accounts.any? { |account| account.name == name }
+  elsif @storage.all_accounts.any? { |account| account[:name] == name }
     "The account name must be unique."
   end
 end
@@ -138,7 +134,7 @@ post '/category/:id/edit' do
   new_category_name = params[:new_category_name]
   @category = @storage.load_category(id)
 
-  error = error_for_category_name(new_category_name) unless @category.name == new_category_name
+  error = error_for_category_name(new_category_name) unless @category[:name] == new_category_name
 
   if error
     session[:error] = error
@@ -146,7 +142,7 @@ post '/category/:id/edit' do
   else
     @storage.change_category_name(id, new_category_name)
     session[:success] = 'The category name has been updated.'
-    redirect "/category/#{@category.id}"
+    redirect "/category/#{@category[:id]}"
   end
 end
 
@@ -180,7 +176,7 @@ post '/account/:id/edit' do
   new_account_name = params[:new_account_name]
   @account = @storage.load_account(id)
 
-  error = error_for_account_name(new_account_name) unless @account.name == new_account_name
+  error = error_for_account_name(new_account_name) unless @account[:name] == new_account_name
 
   if error
     session[:error] = error
@@ -188,7 +184,7 @@ post '/account/:id/edit' do
   else
     @storage.change_account_name(id, new_account_name)
     session[:success] = 'The account name has been updated.'
-    redirect "/account/#{@account.id}"
+    redirect "/account/#{@account[:id]}"
   end
 end
 
