@@ -14,23 +14,24 @@
   <tbody>
     <% if @transactions.empty? %>
       <tr><td colspan='4'>No transactions to show!</td></tr>
-    <% end %>
-    <% @transactions.each do |transaction| %>
-      <tr>
-        <td><%= transaction[:memo] %></td>
-        <% if transaction[:inflow] %>
-          <td>$<%= transaction[:amount] %></td>
-        <% else %>
-          <td></td>
-        <% end %>
-        <% if transaction[:inflow] %>
-          <td></td>
-        <% else %>
-          <td>$<%= transaction[:amount] %></td>
-        <% end %>
-        <td><%= transaction[:date] %></td>
-        <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
-      </tr>
+    <% else %>
+      <% @transactions.each do |transaction| %>
+          <tr>
+            <td><%= transaction[:memo] %></td>
+            <% if transaction[:inflow] %>
+              <td>$<%= transaction[:amount] %></td>
+            <% else %>
+              <td></td>
+            <% end %>
+            <% if transaction[:inflow] %>
+              <td></td>
+            <% else %>
+              <td>$<%= transaction[:amount] %></td>
+            <% end %>
+            <td><%= transaction[:date] %></td>
+            <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
+          </tr>
+      <% end %>
     <% end %>
   </tbody>
 </table>

@@ -24,7 +24,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_category(id)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, name;'
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id;'
     result = query(sql, id)
 
     result.map do |tuple|
@@ -126,7 +126,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_account(id) # ADD PAGINATION METHOD?
-    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, name;'
+    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, id;'
     result = query(sql, id)
 
     result.map do |tuple|

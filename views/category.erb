@@ -26,14 +26,15 @@
   <tbody>
     <% if @transactions.empty? %>
       <p>No transactions to show!</p>
-    <% end %>
-    <% @transactions.each do |transaction| %>
-      <tr>
-        <td><%= transaction[:memo] %></td>
-        <td>$<%= transaction[:amount]%></td>
-        <td><%= transaction[:date] %></td>
-        <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
-      </tr>
+    <% else %>
+      <% @transactions.each do |transaction| %>
+        <tr>
+          <td><%= transaction[:memo] %></td>
+          <td>$<%= transaction[:amount]%></td>
+          <td><%= transaction[:date] %></td>
+          <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
+        </tr>
+      <% end %>
     <% end %>
     <tr>
         <td><strong>Total</strong></td>
