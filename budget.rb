@@ -77,8 +77,8 @@ def error_for_amount(amount)
 end
 
 def error_for_memo(memo)
-  if memo.size > 100
-    'The memo must be less than 100 characters.'
+  if memo.size > 30
+    'The memo must be 30 characters or fewer.'
   end
 end
 
@@ -231,7 +231,12 @@ post '/transaction/new' do
   category_id = params[:category_id]
   account_id = params[:account_id]
 
-  error = error_for_amount(amount) || error_for_memo(memo)
+  if error_for_amount(amount) && error_for_memo(memo)
+    error = error_for_amount(amount) + ' ' + error_for_memo(memo)
+  else
+    error = error_for_amount(amount) || error_for_memo(memo)
+  end
+
   if error
     @accounts = @storage.all_accounts
     @categories = @storage.all_categories
@@ -260,7 +265,11 @@ post '/transaction/:id/edit' do
   category_id = params[:category_id]
   account_id = params[:account_id]
 
-  error = error_for_amount(amount) || error_for_memo(memo)
+  if error_for_amount(amount) && error_for_memo(memo)
+    error = error_for_amount(amount) + ' ' + error_for_memo(memo)
+  else
+    error = error_for_amount(amount) || error_for_memo(memo)
+  end
 
   if error
     @accounts = @storage.all_accounts

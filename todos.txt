@@ -27,6 +27,7 @@ Transactions
 
   DONE - Make sure inputs aren't lost when there is an error when submitting any information. scan CU for each item
 
+  DONE - Pagination
 
 
   Add error checking for transaction date (if circumvented HTML validation)
@@ -35,12 +36,12 @@ Transactions
 
   create backup data verification for any required fields
 
+change sort order by date
 
 
 
   MAJOR FEATURES
 
-  Pagination
 
   Add support to display multiple error messages, esp with transaction
 

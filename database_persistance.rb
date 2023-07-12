@@ -26,7 +26,17 @@ class DatabasePersistance
   end
 
   def all_categories
-    sql = "SELECT * FROM categories ORDER BY name;"
+    sql = <<~SQL
+          SELECT categories.*, 
+                 assigned_amount - COALESCE(sum(transactions.amount), 0) 
+                   AS amount_remaining,
+                 sum(transactions.amount) 
+                   AS transaction_total
+          FROM categories
+          LEFT JOIN transactions 
+            ON categories.id = category_id
+          GROUP BY categories.id;
+    SQL
     result = query(sql)
 
     result.map do |tuple|
@@ -37,7 +47,8 @@ class DatabasePersistance
   def all_accounts
     sql = <<~SQL
           SELECT accounts.*, 
-            COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0) AS balance
+            COALESCE(sum(CASE WHEN t.inflow THEN amount ELSE -(amount) END), 0)
+              AS balance
           FROM accounts 
           LEFT JOIN transactions AS t
             ON accounts.id = t.account_id
@@ -140,7 +151,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_account(id, page)
-    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, id LIMIT $2 OFFSET $3;'
+    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date DESC, id LIMIT $2 OFFSET $3;'
     offset = page * 10 - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
 
@@ -150,7 +161,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_category(id, page)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id LIMIT $2 OFFSET $3;'
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date DESC, id LIMIT $2 OFFSET $3;'
     offset = page * 10 - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
 
