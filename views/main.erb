@@ -1,4 +1,4 @@
-<h3>To be assigned: <%= @storage.to_be_assigned %></h3>
+<h3>To be assigned: <%= format_currency(@storage.to_be_assigned) %></h3>
 
 <table>
   <thead>
@@ -13,11 +13,15 @@
       <% next if category[:name] == 'Inflow'%>
       <tr>
         <td><a href="/category/<%= category[:id] %>"><%= category[:name] %></a></td>
-        <td><%= category[:assigned_amount]%></td>
-        <td><%= category[:amount_remaining] %></td>
+        <td><%= format_currency(category[:assigned_amount])%></td>
+        <td><%= format_currency(category[:amount_remaining]) %></td>
         <td>
           <form action='/category/<%= category[:id] %>/new_allocation' method='post'>
-            <input name='new_assigned_amount' placeholder='Enter New Amount' type='text' value='<%= params[:new_assigned_amount] %>'>
+            <% if params[:id].to_i == category[:id] %>
+              <input name='new_assigned_amount' placeholder='Enter New Amount' type='text' value='<%= params[:new_assigned_amount] %>' required>
+            <% else %>
+                <input name='new_assigned_amount' placeholder='Enter New Amount' type='text' required>
+            <% end %>
             <input type='submit' value='Reassign'>
           </form>
         </td>
@@ -38,7 +42,7 @@
     <% @accounts.each do |account| %>
       <tr>
         <td><a href='/account/<%= account[:id]%>'><%= account[:name] %></td>
-        <td><%= account[:balance] %></td>
+        <td><%= format_currency(account[:balance]) %></td>
       </tr>
     <% end %>
 </table>

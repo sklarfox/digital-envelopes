@@ -27,6 +27,7 @@ helpers do
   end
 
   def format_currency(amount)
+    return unless amount
     format('%.2f', amount)
   end
 end
@@ -40,7 +41,14 @@ def error_for_category_name(name)
 end
 
 def error_for_allocation_amount(amount)
-  return "The allocation amount must be greater than 0." unless amount >= 0
+  if amount.to_f.negative?
+    'The allocation amount must be greater than 0.'
+  elsif amount.chars.all? { |char| char.match?(/\d/) } ||
+        amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
+    return
+  else
+    "Invalid currency format. Please try again."
+  end
 end
 
 def error_for_account_name(name)
@@ -52,11 +60,14 @@ def error_for_account_name(name)
 end
 
 def error_for_amount(amount)
-  if amount.chars.all? { |char| char.match?(/\d/) } ||
-     amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
-     return
+  if amount.to_f.negative?
+    'The amount must be greater than 0.'
+  elsif amount.chars.all? { |char| char.match?(/\d/) } ||
+        amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
+    return
+  else
+    "Invalid currency format. Please try again."
   end
-  "Invalid currency format. Please try again."
 end
 
 def error_for_memo(memo)
@@ -98,13 +109,15 @@ post '/category/new' do
 end
 
 post '/category/:id/new_allocation' do
-  amount = params[:new_assigned_amount].to_f
+  amount = params[:new_assigned_amount]
   id = params[:id].to_i
   @category = @storage.load_category(id)
   error = error_for_allocation_amount(amount)
   if error
+    @categories = @storage.all_categories
+    @accounts = @storage.all_accounts
     session[:error] = error
-    erb :category, layout: :layout
+    erb :main, layout: :layout
   else
     session[:success] = "The assigned amount has been updated."
     @storage.set_category_assigned_amount(amount, id)
