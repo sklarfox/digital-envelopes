@@ -28,13 +28,7 @@ helpers do
 
   def format_currency(amount)
     return unless amount
-    '$' + format('%.2f', amount)
-  end
-
-  def max_account_page_number(account_id)
-    sql = 'SELECT count(id) FROM transactions WHERE id = $1;'
-    
-    (result / 10) + 1
+    "$#{format('%.2f', amount)}"
   end
 end
 
@@ -51,7 +45,7 @@ def error_for_allocation_amount(amount)
     'The allocation amount must be greater than 0.'
   elsif amount.chars.all? { |char| char.match?(/\d/) } ||
         amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
-    return
+    nil
   else
     "Invalid currency format. Please try again."
   end
@@ -70,16 +64,15 @@ def error_for_amount(amount)
     'The amount must be greater than 0.'
   elsif amount.chars.all? { |char| char.match?(/\d/) } ||
         amount.match?(/[0-9]+[.][0-9]{0,2}\z/)
-    return
+    nil
   else
     "Invalid currency format. Please try again."
   end
 end
 
 def error_for_memo(memo)
-  if memo.size > 30
-    'The memo must be 30 characters or fewer.'
-  end
+  return unless memo.size > 30
+  'The memo must be 30 characters or fewer.'
 end
 
 before do
@@ -164,7 +157,9 @@ post '/category/:id/edit' do
   new_category_name = params[:new_category_name]
   @category = @storage.load_category(id)
 
-  error = error_for_category_name(new_category_name) unless @category[:name] == new_category_name
+  unless @category[:name] == new_category_name
+    error = error_for_category_name(new_category_name)
+  end
 
   if error
     session[:error] = error
@@ -206,7 +201,9 @@ post '/account/:id/edit' do
   new_account_name = params[:new_account_name]
   @account = @storage.load_account(id)
 
-  error = error_for_account_name(new_account_name) unless @account[:name] == new_account_name
+  unless @account[:name] == new_account_name
+    error = error_for_account_name(new_account_name)
+  end
 
   if error
     session[:error] = error
@@ -221,7 +218,7 @@ end
 get '/transaction/new' do
   @accounts = @storage.all_accounts
   @categories = @storage.all_categories
-  erb :new_transaction, layout: :layout 
+  erb :new_transaction, layout: :layout
 end
 
 post '/transaction/new' do
@@ -231,11 +228,11 @@ post '/transaction/new' do
   category_id = params[:category_id]
   account_id = params[:account_id]
 
-  if error_for_amount(amount) && error_for_memo(memo)
-    error = error_for_amount(amount) + ' ' + error_for_memo(memo)
-  else
-    error = error_for_amount(amount) || error_for_memo(memo)
-  end
+  error = if error_for_amount(amount) && error_for_memo(memo)
+            "#{error_for_amount(amount)} #{error_for_memo(memo)}"
+          else
+            error_for_amount(amount) || error_for_memo(memo)
+          end
 
   if error
     @accounts = @storage.all_accounts
@@ -265,11 +262,11 @@ post '/transaction/:id/edit' do
   category_id = params[:category_id]
   account_id = params[:account_id]
 
-  if error_for_amount(amount) && error_for_memo(memo)
-    error = error_for_amount(amount) + ' ' + error_for_memo(memo)
-  else
-    error = error_for_amount(amount) || error_for_memo(memo)
-  end
+  error = if error_for_amount(amount) && error_for_memo(memo)
+            "#{error_for_amount(amount)} #{error_for_memo(memo)}"
+          else
+            error_for_amount(amount) || error_for_memo(memo)
+          end
 
   if error
     @accounts = @storage.all_accounts
@@ -277,7 +274,8 @@ post '/transaction/:id/edit' do
     session[:error] = error
     erb :new_transaction, layout: :layout
   else
-    @storage.change_transaction_details(amount, memo, date, category_id, account_id, id)
+    @storage.change_transaction_details(amount, memo, date, category_id,
+                                        account_id, id)
     session[:success] = 'The transaction has been updated.'
     redirect '/budget'
   end
