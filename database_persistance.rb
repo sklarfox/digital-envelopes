@@ -24,7 +24,7 @@ class DatabasePersistance
   end
 
   def load_transactions_for_category(id)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date;'
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, name;'
     result = query(sql, id)
 
     result.map do |tuple|
@@ -57,16 +57,6 @@ class DatabasePersistance
     end
   end
 
-  def sum_category_transactions_DEPRECATED(category_id)
-    sql = <<~SQL
-      SELECT sum(amount) FROM transactions
-      WHERE category_id = $1 AND inflow = false;
-    SQL
-
-    result = query(sql, category_id)
-    result.first['sum'].to_f
-  end
-
   def to_be_assigned
     self.sum_all_inflows - self.sum_all_assigned_amounts
   end
@@ -94,7 +84,7 @@ class DatabasePersistance
       amount: tuple['amount'],
       memo: tuple['memo'],
       inflow: tuple['inflow'] == 't',
-      date: Date.new(*(tuple['date'].split('-').map(&:to_i))), # TODO REFACTOR
+      date: Date.new(*(tuple['date'].split('-').map(&:to_i))),
       category_id: tuple['category_id'],
       account_id: tuple['account_id']
     }
@@ -135,8 +125,8 @@ class DatabasePersistance
     tuple_to_account_hash(result)
   end
 
-  def load_transactions_for_account(id)
-    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date;'
+  def load_transactions_for_account(id) # ADD PAGINATION METHOD?
+    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, name;'
     result = query(sql, id)
 
     result.map do |tuple|

@@ -23,16 +23,22 @@ Transactions
 
   DONE - Fix current balance calculation method for accounts
 
+  DONE - Sorting
+
+  DONE - Make sure inputs aren't lost when there is an error when submitting any information. scan CU for each item
 
 
-  Pagination
-
-  Sorting
-
-  Make sure inputs aren't lost when there is an error when submitting any information. scan CU for each item
-
-  Add support to display multiple error messages, esp with transaction
 
   Add error checking for transaction date (if circumvented HTML validation)
 
   create backup data verification for any required fields
+
+
+
+  MAJOR FEATURES
+
+  Pagination
+
+  Add support to display multiple error messages, esp with transaction
+
+  Add authentication
