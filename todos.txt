@@ -31,7 +31,10 @@ Transactions
 
   Add error checking for transaction date (if circumvented HTML validation)
 
+  Add error checking for too large of a value in amounts
+
   create backup data verification for any required fields
+
 
 
 

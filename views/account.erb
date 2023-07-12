@@ -37,4 +37,17 @@
   </tbody>
 </table>
 
-<a href='/budget'>Return to Budget</a>
+<p>
+  <% if @page > 1 %>
+    <a href='?page=<%= @page - 1%>'>Previous Page</a>
+  <% else %>
+    Previous Page
+  <% end %>
+  <% if @page < @max_page %>
+    <a href='?page=<%= @page + 1 %>'>Next Page</a>
+  <% else %>
+    Next Page
+  <% end %>
+<p>
+
+<p><a href='/budget'>Return to Budget</a></p>

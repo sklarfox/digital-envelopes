@@ -30,6 +30,12 @@ helpers do
     return unless amount
     '$' + format('%.2f', amount)
   end
+
+  def max_account_page_number(account_id)
+    sql = 'SELECT count(id) FROM transactions WHERE id = $1;'
+    
+    (result / 10) + 1
+  end
 end
 
 def error_for_category_name(name)
@@ -130,11 +136,21 @@ get '/category/1' do
 end
 
 get '/category/:id' do
-  # binding.pry
   id = params[:id].to_i
+  @page = (params[:page] || 1).to_i
   @category = @storage.load_category(id)
-  @transactions = @storage.load_transactions_for_category(id)
+  @max_page = @storage.max_category_page_number(id)
+  @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
+end
+
+get '/account/:id' do
+  id = params[:id].to_i
+  @page = (params[:page] || 1).to_i
+  @account = @storage.load_account(id)
+  @max_page = @storage.max_account_page_number(id)
+  @transactions = @storage.load_transactions_for_account(id, @page)
+  erb :account, layout: :layout
 end
 
 get '/category/:id/edit' do
@@ -200,13 +216,6 @@ post '/account/:id/edit' do
     session[:success] = 'The account name has been updated.'
     redirect "/account/#{@account[:id]}"
   end
-end
-
-get '/account/:id' do
-  id = params['id'].to_i
-  @account = @storage.load_account(id)
-  @transactions = @storage.load_transactions_for_account(id)
-  erb :account, layout: :layout
 end
 
 get '/transaction/new' do

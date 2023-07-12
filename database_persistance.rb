@@ -1,6 +1,8 @@
 require 'pg'
 
 class DatabasePersistance
+  ITEMS_PER_PAGE = 10
+
   def initialize
     @db = PG.connect(dbname: 'budget')
   end
@@ -21,15 +23,6 @@ class DatabasePersistance
     SQL
     result = query(sql, id)
     tuple_to_category_hash(result.first)
-  end
-
-  def load_transactions_for_category(id)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id LIMIT 10;'
-    result = query(sql, id)
-
-    result.map do |tuple|
-      tuple_to_transaction_hash(tuple)
-    end
   end
 
   def all_categories
@@ -128,9 +121,38 @@ class DatabasePersistance
     tuple_to_account_hash(result)
   end
 
-  def load_transactions_for_account(id) # ADD PAGINATION METHOD?
-    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, id;'
-    result = query(sql, id)
+  def max_account_page_number(id)
+    sql = <<~SQL
+      SELECT count(id) from transactions
+      WHERE account_id = $1;
+    SQL
+    result = query(sql, id).first['count'].to_i
+    result / 10 + 1
+  end
+
+  def max_category_page_number(id)
+    sql = <<~SQL
+      SELECT count(id) from transactions
+      WHERE category_id = $1;
+    SQL
+    result = query(sql, id).first['count'].to_i
+    result / 10 + 1
+  end
+
+  def load_transactions_for_account(id, page)
+    sql = 'SELECT * FROM transactions WHERE account_id = $1 ORDER BY date, id LIMIT $2 OFFSET $3;'
+    offset = page * 10 - 10
+    result = query(sql, id, ITEMS_PER_PAGE, offset)
+
+    result.map do |tuple|
+      tuple_to_transaction_hash(tuple)
+    end
+  end
+
+  def load_transactions_for_category(id, page)
+    sql = 'SELECT * FROM transactions WHERE category_id = $1 ORDER BY date, id LIMIT $2 OFFSET $3;'
+    offset = page * 10 - 10
+    result = query(sql, id, ITEMS_PER_PAGE, offset)
 
     result.map do |tuple|
       tuple_to_transaction_hash(tuple)
