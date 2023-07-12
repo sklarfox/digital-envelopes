@@ -1,10 +1,10 @@
 <form action='' method='post'>
       <label for='new_category_name'>Enter the new name for the category:</label>
-      <input type='text' name='new_category_name' placeholder='Account name' value='<%= params[:new_category_name] || @category.name %>'/>
+      <input type='text' name='new_category_name' placeholder='Account name' value='<%= params[:new_category_name] || @category[:name] %>'/>
       <input type='submit' value='Save'>
-      <a href='/category/<%= @category.id %>'>Cancel</a>
+      <a href='/category/<%= @category[:id] %>'>Cancel</a>
 </form>
 
-<form action='/category/<%= @category.id %>/delete' method='post'>
+<form action='/category/<%= @category[:id] %>/delete' method='post'>
   <button type ='submit'>Delete Category</button>
 </form>

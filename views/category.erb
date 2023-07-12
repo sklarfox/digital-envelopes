@@ -1,14 +1,14 @@
-<h3><a href='/category/<%= @category.id %>/edit'><%= @category.name %></a></h3>
+<h3><a href='/category/<%= @category[:id] %>/edit'><%= @category[:name] %></a></h3>
 
 <table>
   <tr>
     <td>
-      <h4>Assigned amount: $<%= @category.assigned_amount_formatted %></h4>
+      <h4>Assigned amount: $<%= @category[:assigned_amount] %></h4>
     </td>
   </tr>
   <tr>
     <td>
-      <h4>Remaining to spend: $<%= @category.amount_remaining_formatted %></h4>
+      <h4>Remaining to spend: $<%= @category[:amount_remaining] %></h4>
     </td>
   </tr>
 </table>
@@ -29,15 +29,15 @@
     <% end %>
     <% @transactions.each do |transaction| %>
       <tr>
-        <td><%= transaction.memo %></td>
-        <td>$<%= transaction.amount%></td>
-        <td><%= transaction.date %></td>
-        <td><a href='/transaction/<%= transaction.id %>/edit'>Edit</a></td>
+        <td><%= transaction[:memo] %></td>
+        <td>$<%= transaction[:amount]%></td>
+        <td><%= transaction[:date] %></td>
+        <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
       </tr>
     <% end %>
     <tr>
         <td><strong>Total</strong></td>
-        <td><strong><%= sum(@transactions)%></strong></td>
+        <td><strong><%= 'TODO' %></strong></td>
     </tr>
   </tbody>
 </table>

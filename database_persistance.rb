@@ -12,11 +12,19 @@ class DatabasePersistance
   def load_category(id)
     sql = 'SELECT * FROM categories WHERE id = $1;'
     result = query(sql, id)
-    tuple_to_category_object(result.first)
+    tuple_to_category_hash(result.first)
   end
 
   def load_transactions_for_category(id)
-    sql = 'SELECT * FROM transactions WHERE category_id = $1;'
+    sql = <<~SQL
+    SELECT categories.*, 
+           assigned_amount - sum(transactions.amount) AS amount_remaining
+      FROM categories
+      JOIN transactions ON categories.id = category_id
+      WHERE categories.id = 4
+      GROUP BY categories.id;
+    SQL
+    
     result = query(sql, id)
 
     result.map do |tuple|
@@ -29,7 +37,7 @@ class DatabasePersistance
     result = query(sql)
 
     result.map do |tuple|
-      tuple_to_category_object(tuple)
+      tuple_to_category_hash(tuple)
     end
   end
 
@@ -42,7 +50,7 @@ class DatabasePersistance
     end
   end
 
-  def sum_category_transactions(category_id)
+  def sum_category_transactions_DEPRECATED(category_id)
     sql = <<~SQL
       SELECT sum(amount) FROM transactions
       WHERE category_id = $1 AND inflow = false;
@@ -62,7 +70,33 @@ class DatabasePersistance
     result.first['sum'].to_f
   end
 
-  def tuple_to_category_object(tuple)
+  def tuple_to_category_hash(tuple)
+    { id: tuple['id'].to_i,
+      name: tuple['name'],
+      assigned_amount: tuple['assigned_amount'],
+      amount_remaining: tuple['amount_remaining']
+    }
+  end
+
+  def tuple_to_transaction_hash(tuple)
+    { id: tuple['id'].to_i,
+      amount: tuple['amount'],
+      memo: tuple['memo'],
+      inflow: tuple['inflow'] == 't',
+      date: Date.new(*(params['date'].split('-').map(&:to_i))), # TODO REFACTOR
+      category_id: tuple['category_id'],
+      account_id: tuple['account_id']
+    }
+  end
+
+  def tuple_to_account_hash(tuple)
+    { id: tuple['id'],
+      name: tuple['name'],
+      balance: tuple['balance']
+    }
+  end
+
+  def tuple_to_category_object_DEPRECATED(tuple) #TODO REMOVE
     id = tuple['id']
     name = tuple['name']
     assigned_amount = tuple['assigned_amount'].to_f
@@ -71,11 +105,11 @@ class DatabasePersistance
     Category.new(id, name, assigned_amount, amount_remaining)
   end
 
-  def tuple_to_transaction_object(tuple)
+  def tuple_to_transaction_object_DEPRECATED(tuple)
     Transaction.new(tuple)
   end
 
-  def tuple_to_account_object(tuple)
+  def tuple_to_account_object_DEPRECATED(tuple)
     Account.new(tuple)
   end
 

@@ -1,10 +1,10 @@
 <form action='' method='post'>
       <label for='new_account_name'>Enter the new name for the account:</label>
-      <input type='text' name='new_account_name' placeholder='Account name' value='<%= params[:new_account_name] || @account.name %>'/>
+      <input type='text' name='new_account_name' placeholder='Account name' value='<%= params[:new_account_name] || @account[:name] %>'/>
       <input type='submit' value='Save'>
-      <a href='/account/<%= @account.id %>'>Cancel</a>
+      <a href='/account/<%= @account[:id] %>'>Cancel</a>
 </form>
 
-<form action='/account/<%= @account.id %>/delete' method='post'>
+<form action='/account/<%= @account[:id] %>/delete' method='post'>
   <button type ='submit'>Delete Account</button>
 </form>

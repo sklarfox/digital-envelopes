@@ -1,4 +1,4 @@
-<h3><a href='/account/<%= @account.id %>/edit'><%= @account.name %></a></h3>
+<h3><a href='/account/<%= @account[:id] %>/edit'><%= @account[:name] %></a></h3>
 
 <h3>Transactions:</h3>
 
@@ -17,19 +17,19 @@
     <% end %>
     <% @transactions.each do |transaction| %>
       <tr>
-        <td><%= transaction.memo %></td>
-        <% if transaction.inflow %>
-          <td>$<%= transaction.amount %></td>
+        <td><%= transaction[:memo] %></td>
+        <% if transaction[:inflow] %>
+          <td>$<%= transaction[:amount] %></td>
         <% else %>
           <td></td>
         <% end %>
-        <% if transaction.inflow %>
+        <% if transaction[:inflow] %>
           <td></td>
         <% else %>
-          <td>$<%= transaction.amount %></td>
+          <td>$<%= transaction[:amount] %></td>
         <% end %>
-        <td><%= transaction.date %></td>
-        <td><a href='/transaction/<%= transaction.id %>/edit'>Edit</a></td>
+        <td><%= transaction[:date] %></td>
+        <td><a href='/transaction/<%= transaction[:id] %>/edit'>Edit</a></td>
       </tr>
     <% end %>
   </tbody>

@@ -32,3 +32,5 @@ Transactions
     inserting new transaction with and without memo
 
   Add support to display multiple error messages, esp with transaction
+
+  Add error checking for transaction date
