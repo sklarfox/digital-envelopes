@@ -137,7 +137,7 @@ class DatabasePersistance
     sql = <<~SQL
       SELECT * FROM transactions
       WHERE account_id = $1
-      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+      ORDER BY date DESC, memo LIMIT $2 OFFSET $3;
     SQL
     offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
@@ -151,7 +151,7 @@ class DatabasePersistance
     sql = <<~SQL
       SELECT * FROM transactions
       WHERE category_id = $1
-      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+      ORDER BY date DESC, memo LIMIT $2 OFFSET $3;
     SQL
     offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)

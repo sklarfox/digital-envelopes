@@ -9,7 +9,7 @@
       <label for="category">Category:</label>
       <select name="category_id">
         <% @categories.each do |category| %>
-          <% if category[:id] == params['category_id'] %>
+          <% if category[:id].to_s == params['category_id'] %>
             <option value='<%= category[:id] %>' selected><%= category[:name] %></option>
           <% else %>
             <option value='<%= category[:id] %>'><%= category[:name] %></option>

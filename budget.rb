@@ -88,7 +88,6 @@ get '/login' do
 end
 
 post '/login' do
-
   if params[:username] == 'password' && params[:password] == 'password'
     session[:username] = 'password'
     session[:success] = 'Welcome! You have been logged in.'
@@ -164,15 +163,6 @@ get '/category/:id' do
   erb :category, layout: :layout
 end
 
-get '/account/:id' do
-  id = params[:id].to_i
-  @page = (params[:page] || 1).to_i
-  @account = @storage.load_account(id)
-  @max_page = @storage.max_account_page_number(id)
-  @transactions = @storage.load_transactions_for_account(id, @page)
-  erb :account, layout: :layout
-end
-
 get '/category/:id/edit' do
   id = params[:id].to_i
   @category = @storage.load_category(id)
@@ -209,12 +199,26 @@ post '/account/new' do
 
   if error
     session[:error] = error
-    erb :category, layout: :layout
+    erb :new_account, layout: :layout
   else
     session[:success] = "The account has been created."
     @storage.add_new_account(account_name)
     redirect "/budget"
   end
+end
+
+get '/account/:id' do
+  id = params[:id].to_i
+  @page = (params[:page] || 1).to_i
+  @account = @storage.load_account(id)
+  @max_page = @storage.max_account_page_number(id)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
+    @page = @max_page
+  end
+  @transactions = @storage.load_transactions_for_account(id, @page)
+  erb :account, layout: :layout
 end
 
 get '/account/:id/edit' do
@@ -296,10 +300,11 @@ post '/transaction/:id/edit' do
           end
 
   if error
+    @transaction = @storage.load_transaction(id)
     @accounts = @storage.all_accounts
     @categories = @storage.all_categories
     session[:error] = error
-    erb :new_transaction, layout: :layout
+    erb :edit_transaction, layout: :layout
   else
     @storage.change_transaction_details(amount, memo, date, category_id,
                                         account_id, id)
