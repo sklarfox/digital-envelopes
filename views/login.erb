@@ -1,7 +1,7 @@
 <form action='/login' method='post'>
   <div>
     <label for='username'>Username:</label>
-    <input type='text' name='username' required>
+    <input type='text' name='username' value='<%= params[:username]%>' required>
   </div>
   <div>
     <label for='password'>Password:</label>

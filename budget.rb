@@ -1,7 +1,8 @@
-require "sinatra"
-require "sinatra/content_for"
-require "tilt/erubis"
+require "bcrypt"
 require "date"
+require "sinatra"
+require "tilt/erubis"
+require "yaml"
 require_relative "database_persistance"
 
 require 'pry'
@@ -73,8 +74,25 @@ def error_for_memo(memo)
   'The memo must be 30 characters or fewer.'
 end
 
+def load_user_credentials
+  credentials_path = File.expand_path("../users.yml", __FILE__)
+  YAML.load_file(credentials_path)
+end
+
+def valid_credentials?(username, password)
+  credentials = load_user_credentials
+
+  if credentials.key?(username)
+    bcrypt_password = BCrypt::Password.new(credentials[username])
+    bcrypt_password == password
+  else
+    false
+  end
+end
+
 before do
   @storage = DatabasePersistance.new
+
   unless session[:username] || env['REQUEST_PATH'] == '/login'
     session[:original_path] = env['REQUEST_PATH']
     session[:error] = 'Please log in to access that resource.'
@@ -83,13 +101,14 @@ before do
 end
 
 get '/login' do
-
   erb :login, layout: :layout
 end
 
 post '/login' do
-  if params[:username] == 'password' && params[:password] == 'password'
-    session[:username] = 'password'
+  username = params[:username]
+
+  if valid_credentials?(username, params[:password])
+    session[:username] = username
     session[:success] = 'Welcome! You have been logged in.'
     redirect session.delete(:original_path) || '/budget'
   else
