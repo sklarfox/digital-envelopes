@@ -21,5 +21,13 @@
     <main>
       <%== yield %>
     </main>
+
+    <footer>
+      <% unless env['REQUEST_PATH'] == '/login' %>
+        <form action='/logout' method='post'>
+          <input type='submit' value='Sign Out'>
+        </form>
+      <% end %>
+    </footer>
   </body>
 </html>

@@ -75,6 +75,35 @@ end
 
 before do
   @storage = DatabasePersistance.new
+  unless session[:username] || env['REQUEST_PATH'] == '/login'
+    session[:original_path] = env['REQUEST_PATH']
+    session[:error] = 'Please log in to access that resource.'
+    redirect '/login'
+  end
+end
+
+get '/login' do
+
+  erb :login, layout: :layout
+end
+
+post '/login' do
+
+  if params[:username] == 'password' && params[:password] == 'password'
+    session[:username] = 'password'
+    session[:success] = 'Welcome! You have been logged in.'
+    redirect session.delete(:original_path) || '/budget'
+  else
+    session[:error] = 'Invalid Credentials. Please try again.'
+    status 422
+    erb :login, layout: :layout
+  end
+end
+
+post '/logout' do
+  session.delete(:username)
+  session[:success] = 'You have been successfully logged out.'
+  redirect '/login'
 end
 
 get '/' do
