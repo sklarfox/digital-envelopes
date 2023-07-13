@@ -9,8 +9,9 @@ CREATE TABLE categories (
   assigned_amount decimal(10,2) NOT NULL DEFAULT 0
 );
 
-INSERT INTO categories (name)
-VALUES ('Inflow');
+INSERT INTO accounts(name) VALUES ('Checking');
+
+INSERT INTO categories (name) VALUES ('Inflow');
 
 CREATE TABLE transactions (
   id serial PRIMARY KEY,
@@ -21,12 +22,3 @@ CREATE TABLE transactions (
   category_id int NOT NULL REFERENCES categories (id) ON DELETE CASCADE,
   account_id int NOT NULL REFERENCES accounts (id) ON DELETE CASCADE
 );
-
--- Development Data Below
-
-INSERT INTO accounts (name)
-VALUES ('Checking'), ('Savings'), ('Money Market');
-
-INSERT INTO categories (name)
-VALUES ('Groceries'), ('Rent'), ('Fun Money'), ('Health and Fitness'),
-       ('Emergency Fund'), ('Transportation');

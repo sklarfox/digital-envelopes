@@ -12,19 +12,19 @@ RDBMS: postgreSQL Version 14.8
 
 #### Installation
 
-1. Create a psql database called `budget`. Import `schema.sql` will create the required schema and populate the database with test data.
+1. Create a psql database named `budget`. Importing `schema_empty.sql` will create the minimum required schema, but otherwise leave the budget empty. `schema_populated.sql` will create the schema and populate the budget with some test data.
 2. Run `ruby budget.rb` to start the web server.
 3. Navigate to `localhost:4567` (or whatever port your application is listening on).
 
 #### A bit on the 'Envelope' system of personal finance
 
-This app is meant to create a digital version of the envelope system. In the physical world, a budgeteer would use real envelopes, and label each envelope with an expense category. This could be rent, groceries, insurance, fun money, or anything else. Then, anytime they are paid income, they would allocate their cash into those envelopes. Then, any time a purchase or expense comes up, it would be paid from the appropriate envelope.
+This app is meant to create a digital version of the envelope system. In the physical world, a budgeter would use real envelopes, and label each envelope with an expense category. This could be rent, groceries, insurance, fun money, or anything else. Then, anytime they are paid income, they would allocate their cash into those envelopes. Then, when a purchase or expense happens, it would be paid from the appropriate envelope.
 
-The key focus of this method is to prevent overspending for any given category; if the cash hasn't been allocated for a purchase, then the envelope is empty. To complete the purchase, then money would need to either be pulled from another category, or not completed. This allows the person to be mindful and have greater awareness around spending.
+The key focus of this method is to prevent overspending for any given category; if the cash hasn't been allocated for a purchase, then the envelope is empty. To complete the purchase, then money would need to either be pulled from another category, or not completed after all. This allows the budgeter to be mindful and have greater awareness around spending.
 
 #### Usage
 
-The app requires the user to be logged in to access any portion of the app. Once logged in, the user will remain logged in until the `Sign Out` button is pressed.
+The app requires the user to be logged in to access any part of the app. Once logged in, the user will remain logged in until the `Sign Out` button is pressed.
 
 - **Credentials**: *username*: `password` 
 
@@ -50,3 +50,10 @@ The app requires the user to be logged in to access any portion of the app. Once
 7. Deleting a transaction
    - Press the delete transaction button from the 'Edit Transaction' page
 
+### Additional notes
+
+One major feature that this budget technique would need for real-world use is supporting calendar months. With the current implementation, a category's **'Assigned'** value actually represents the *total sum* of all money assigned to that category for the entirety of the database. Likewise, a category's **'Remaining'** value represents the *total sum* of all transactions ever spent from that category. This means that over time, these two numbers would keep growing and not necessarily represent the user's current budgetary needs.
+
+Ideally, each budget category and its assigned/remaining values would reset each month, so that the numbers a user is working with are relevant to the current month.
+
+However, this is a feature that was assumed to be beyond the scope of this project, and is not implemented for the sake of simplicity. The app in its current state should meet all listed project requirements.

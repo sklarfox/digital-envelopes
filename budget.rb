@@ -178,6 +178,12 @@ get '/category/:id' do
   @page = (params[:page] || 1).to_i
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
+    @page = @max_page
+  end
+  
   @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
 end

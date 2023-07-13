@@ -121,7 +121,8 @@ class DatabasePersistance
       WHERE account_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    (result / 10) + 1
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
   end
 
   def max_category_page_number(id)
@@ -130,7 +131,8 @@ class DatabasePersistance
       WHERE category_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    (result / 10) + 1
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
   end
 
   def load_transactions_for_account(id, page)
