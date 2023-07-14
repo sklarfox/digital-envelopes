@@ -1,7 +1,8 @@
-require "sinatra"
-require "sinatra/content_for"
-require "tilt/erubis"
+require "bcrypt"
 require "date"
+require "sinatra"
+require "tilt/erubis"
+require "yaml"
 require_relative "database_persistance"
 
 require 'pry'
@@ -75,8 +76,75 @@ def error_for_memo(memo)
   'The memo must be 30 characters or fewer.'
 end
 
+def load_user_credentials
+  credentials_path = File.expand_path("../users.yml", __FILE__)
+  YAML.load_file(credentials_path)
+end
+
+def valid_credentials?(username, password)
+  credentials = load_user_credentials
+
+  if credentials.key?(username)
+    bcrypt_password = BCrypt::Password.new(credentials[username])
+    bcrypt_password == password
+  else
+    false
+  end
+end
+
+def redirect_unless_valid(*elements)
+  elements.each do |element|
+    if !element
+      session[:error] = "The requested page doesn't exist."
+      redirect '/budget'
+    end
+  end
+end
+
+def validate_page_input(input)
+  if !input
+    1
+  elsif !input.chars.all? { |char| char.match(/\d/)}
+    nil
+  elsif input.to_i < 1
+    nil
+  else
+    input.to_i
+  end
+end
+
 before do
   @storage = DatabasePersistance.new
+
+  unless session[:username] || env['REQUEST_PATH'] == '/login'
+    session[:original_path] = env['REQUEST_PATH']
+    session[:error] = 'Please log in to access that resource.'
+    redirect '/login'
+  end
+end
+
+get '/login' do
+  erb :login, layout: :layout
+end
+
+post '/login' do
+  username = params[:username]
+
+  if valid_credentials?(username, params[:password])
+    session[:username] = username
+    session[:success] = 'Welcome! You have been logged in.'
+    redirect session.delete(:original_path) || '/budget'
+  else
+    session[:error] = 'Invalid Credentials. Please try again.'
+    status 422
+    erb :login, layout: :layout
+  end
+end
+
+post '/logout' do
+  session.delete(:username)
+  session[:success] = 'You have been successfully logged out.'
+  redirect '/login'
 end
 
 get '/' do
@@ -84,8 +152,19 @@ get '/' do
 end
 
 get '/budget' do
-  @categories = @storage.all_categories
+  @page = validate_page_input(params[:page])
+  @max_page = @storage.max_budget_page_number
+
+  redirect_unless_valid(@page)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of categories!"
+    @page = @max_page
+  end
+
+  @categories = @storage.load_categories(@page)
   @accounts = @storage.all_accounts
+
   erb :main, layout: :layout
 end
 
@@ -111,6 +190,7 @@ post '/category/:id/new_allocation' do
   amount = params[:new_assigned_amount]
   id = params[:id].to_i
   @category = @storage.load_category(id)
+  
   error = error_for_allocation_amount(amount)
   if error
     @categories = @storage.all_categories
@@ -130,25 +210,21 @@ end
 
 get '/category/:id' do
   id = params[:id].to_i
-  @page = (params[:page] || 1).to_i
+  @page = validate_page_input(params[:page])
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
+
+  redirect_unless_valid(@category, @page)
+
   @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
-end
-
-get '/account/:id' do
-  id = params[:id].to_i
-  @page = (params[:page] || 1).to_i
-  @account = @storage.load_account(id)
-  @max_page = @storage.max_account_page_number(id)
-  @transactions = @storage.load_transactions_for_account(id, @page)
-  erb :account, layout: :layout
 end
 
 get '/category/:id/edit' do
   id = params[:id].to_i
   @category = @storage.load_category(id)
+  redirect_unless_valid(@category)
+
   erb :edit_category, layout: :layout
 end
 
@@ -182,7 +258,7 @@ post '/account/new' do
 
   if error
     session[:error] = error
-    erb :category, layout: :layout
+    erb :new_account, layout: :layout
   else
     session[:success] = "The account has been created."
     @storage.add_new_account(account_name)
@@ -190,9 +266,26 @@ post '/account/new' do
   end
 end
 
+get '/account/:id' do
+  id = params[:id].to_i
+  @page = validate_page_input(params[:page])
+  @account = @storage.load_account(id)
+  @max_page = @storage.max_account_page_number(id)
+
+  redirect_unless_valid(@account, @page)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
+    @page = @max_page
+  end
+  @transactions = @storage.load_transactions_for_account(id, @page)
+  erb :account, layout: :layout
+end
+
 get '/account/:id/edit' do
   id = params[:id].to_i
   @account = @storage.load_account(id)
+  redirect_unless_valid(@account)
   erb :edit_account, layout: :layout
 end
 
@@ -251,6 +344,8 @@ get '/transaction/:id/edit' do
   @transaction = @storage.load_transaction(id)
   @categories = @storage.all_categories
   @accounts = @storage.all_accounts
+
+  redirect_unless_valid(@transaction)
   erb :edit_transaction, layout: :layout
 end
 
@@ -269,10 +364,11 @@ post '/transaction/:id/edit' do
           end
 
   if error
+    @transaction = @storage.load_transaction(id)
     @accounts = @storage.all_accounts
     @categories = @storage.all_categories
     session[:error] = error
-    erb :new_transaction, layout: :layout
+    erb :edit_transaction, layout: :layout
   else
     @storage.change_transaction_details(amount, memo, date, category_id,
                                         account_id, id)

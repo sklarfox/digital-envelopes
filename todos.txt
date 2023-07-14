@@ -30,17 +30,6 @@ Transactions
   DONE - Pagination
 
   DONE - change sort order by date
-  
+
   DONE - Add error checking for too large of a value in amounts
 ____________________________________________________________________________
-  
-
-
-  SKIP - Add error checking for transaction date (if circumvented HTML validation)
-
-
-
-
-  MAJOR FEATURES
-
-  Add authentication

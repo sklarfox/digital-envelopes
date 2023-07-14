@@ -4,7 +4,7 @@
   <thead>
     <tr>
       <th><h4>Category</h4></th>
-      <th><h4>Allocated</h4></th>
+      <th><h4>Assigned</h4></th>
       <th><h4>Remaining</h4></th>
     </tr>
   </thead>
@@ -29,6 +29,19 @@
     <% end %>
   </tbody>
 </table>
+
+<p>
+  <% if @page > 1 %>
+    <a href='?page=<%= @page - 1%>'>Previous Page</a>
+  <% else %>
+    Previous Page
+  <% end %>
+  <% if @page < @max_page %>
+    <a href='?page=<%= @page + 1 %>'>Next Page</a>
+  <% else %>
+    Next Page
+  <% end %>
+<p>
 
 <h3>Accounts</h3>
 

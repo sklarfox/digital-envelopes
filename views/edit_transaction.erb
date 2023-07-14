@@ -1,14 +1,14 @@
 <form action='/transaction/<%= @transaction[:id] %>/edit' method='post'>
     <label for="amount">Amount:</label>
-    <input type="text" name="amount" placeholder='0.00' value='<%= @transaction[:amount] %>' required />
+    <input type="text" name="amount" placeholder='0.00' value='<%= params['amount'] || @transaction[:amount] %>' required />
 
     <label for="memo">Memo:</label>
-    <input type="text" name="memo" placeholder='memo' value='<%= @transaction[:memo] %>'/>
+    <input type="text" name="memo" placeholder='memo' value='<%= params['memo'] || @transaction[:memo] %>'/>
 
     <label for="category">Category:</label>
     <select name="category_id">
       <% @categories.each do |category| %>
-        <% if category[:id] == @transaction[:category_id] %>
+        <% if category[:id].to_s == (params['category_id'] || @transaction[:category_id].to_s) %>
           <option value='<%= category[:id] %>' selected><%= category[:name] %></option>
         <% else %>
           <option value='<%= category[:id] %>'><%= category[:name] %></option>
@@ -19,7 +19,7 @@
     <label for="account">Account:</label>
     <select name="account_id">
       <% @accounts.each do |account| %>
-        <% if account[:id] == @transaction[:account_id] %>
+        <% if account[:id] == (params['account_id'] || @transaction[:account_id]) %>
           <option value='<%= account[:id] %>' selected><%= account[:name] %></option>
         <% else %>
           <option value='<%= account[:id] %>'><%= account[:name] %></option>
@@ -34,6 +34,8 @@
   <a href='/budget'>Cancel</a>
 </form>
 
-<form action='/transaction/<%= @transaction[:id] %>/delete' method='post'>
-  <button type ='submit'>Delete Transaction</button>
-</form>
+<div>
+  <form action='/transaction/<%= @transaction[:id] %>/delete' method='post'>
+    <button type ='submit'>Delete Transaction</button>
+  </form>
+</div>

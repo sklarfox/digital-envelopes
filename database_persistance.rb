@@ -20,8 +20,9 @@ class DatabasePersistance
         WHERE categories.id = $1
         GROUP BY categories.id;
     SQL
-    result = query(sql, id)
-    tuple_to_category_hash(result.first)
+    result = query(sql, id).first
+
+    tuple_to_category_hash(result) if result
   end
 
   def all_categories
@@ -33,6 +34,22 @@ class DatabasePersistance
     GROUP BY categories.id;
     SQL
     result = query(sql)
+    result.map { |tuple| tuple_to_category_hash(tuple) }
+  end
+
+  def load_categories(page)
+    sql = <<~SQL
+      SELECT categories.*,
+             assigned_amount - COALESCE(sum(transactions.amount), 0) AS amount_remaining,
+             sum(transactions.amount) AS transaction_total
+      FROM categories LEFT JOIN transactions ON categories.id = category_id
+      GROUP BY categories.id
+      ORDER BY categories.name
+      LIMIT 10 OFFSET $1;
+    SQL
+    offset = (page * 10) - 10
+    result = query(sql, offset)
+
     result.map { |tuple| tuple_to_category_hash(tuple) }
   end
 
@@ -65,6 +82,8 @@ class DatabasePersistance
   end
 
   def tuple_to_category_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'].to_i,
       name: tuple['name'],
       assigned_amount: tuple['assigned_amount'],
@@ -72,6 +91,8 @@ class DatabasePersistance
   end
 
   def tuple_to_transaction_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'].to_i,
       amount: tuple['amount'],
       memo: tuple['memo'],
@@ -82,6 +103,8 @@ class DatabasePersistance
   end
 
   def tuple_to_account_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'],
       name: tuple['name'],
       balance: tuple['balance'] }
@@ -112,16 +135,25 @@ class DatabasePersistance
           GROUP BY accounts.id ORDER BY accounts.name;
     SQL
     result = query(sql, id).first
-    tuple_to_account_hash(result)
+    tuple_to_account_hash(result) if result
   end
 
   def max_account_page_number(id)
     sql = <<~SQL
-      SELECT count(id) from transactions
+      SELECT count(id) FROM transactions
       WHERE account_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    (result / 10) + 1
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
+  end
+
+  def max_budget_page_number
+    sql = 'SELECT count(id) FROM categories;'
+
+    result = query(sql).first['count'].to_i
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
   end
 
   def max_category_page_number(id)
@@ -130,14 +162,15 @@ class DatabasePersistance
       WHERE category_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
-    (result / 10) + 1
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
   end
 
   def load_transactions_for_account(id, page)
     sql = <<~SQL
       SELECT * FROM transactions
       WHERE account_id = $1
-      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+      ORDER BY date DESC, memo LIMIT $2 OFFSET $3;
     SQL
     offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
@@ -151,7 +184,7 @@ class DatabasePersistance
     sql = <<~SQL
       SELECT * FROM transactions
       WHERE category_id = $1
-      ORDER BY date DESC, id LIMIT $2 OFFSET $3;
+      ORDER BY date DESC, memo LIMIT $2 OFFSET $3;
     SQL
     offset = (page * 10) - 10
     result = query(sql, id, ITEMS_PER_PAGE, offset)
@@ -191,7 +224,8 @@ class DatabasePersistance
     WHERE t.id = $1;
     SQL
 
-    tuple_to_transaction_hash(query(sql, id).first)
+    result = query(sql, id).first
+    tuple_to_transaction_hash(result) if result
   end
 
   def change_transaction_details(amount, memo, date, cat_id, acc_id, id)
