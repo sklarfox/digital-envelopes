@@ -169,6 +169,10 @@ INSERT INTO public.categories VALUES (2, 'Groceries', 500.00);
 INSERT INTO public.categories VALUES (5, 'Health and Fitness', 450.00);
 INSERT INTO public.categories VALUES (4, 'Fun Money', 300.00);
 INSERT INTO public.categories VALUES (7, 'Transportation', 200.00);
+INSERT INTO public.categories VALUES (8, 'House Plants', 0.00);
+INSERT INTO public.categories VALUES (9, 'Dining Out', 0.00);
+INSERT INTO public.categories VALUES (10, 'Insurance', 0.00);
+INSERT INTO public.categories VALUES (11, 'Garden Projects', 0.00);
 
 
 --
@@ -210,7 +214,7 @@ SELECT pg_catalog.setval('public.accounts_id_seq', 3, true);
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: alex
 --
 
-SELECT pg_catalog.setval('public.categories_id_seq', 7, true);
+SELECT pg_catalog.setval('public.categories_id_seq', 11, true);
 
 
 --

@@ -44,6 +44,7 @@ class DatabasePersistance
              sum(transactions.amount) AS transaction_total
       FROM categories LEFT JOIN transactions ON categories.id = category_id
       GROUP BY categories.id
+      ORDER BY categories.name
       LIMIT 10 OFFSET $1;
     SQL
     offset = (page * 10) - 10

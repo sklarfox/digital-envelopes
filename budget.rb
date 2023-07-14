@@ -154,9 +154,14 @@ get '/budget' do
   @max_page = @storage.max_budget_page_number
 
   redirect_unless_valid(@page)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of categories!"
+    @page = @max_page
+  end
+
   @categories = @storage.load_categories(@page)
   @accounts = @storage.all_accounts
-
 
   erb :main, layout: :layout
 end
