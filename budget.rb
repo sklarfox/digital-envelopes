@@ -90,10 +90,24 @@ def valid_credentials?(username, password)
   end
 end
 
-def redirect_unless_valid(element)
-  if !element
-    session[:error] = "The requested page doesn't exist."
-    redirect '/budget'
+def redirect_unless_valid(*elements)
+  elements.each do |element|
+    if !element
+      session[:error] = "The requested page doesn't exist."
+      redirect '/budget'
+    end
+  end
+end
+
+def validate_page_input(input)
+  if !input
+    1
+  elsif !input.chars.all? { |char| char.match(/\d/)}
+    nil
+  elsif input.to_i < 1
+    nil
+  else
+    input.to_i
   end
 end
 
@@ -183,11 +197,11 @@ end
 
 get '/category/:id' do
   id = params[:id].to_i
-  @page = (params[:page] || 1).to_i
+  @page = validate_page_input(params[:page])
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
 
-  redirect_unless_valid(@category)
+  redirect_unless_valid(@category, @page)
 
   @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
@@ -241,11 +255,11 @@ end
 
 get '/account/:id' do
   id = params[:id].to_i
-  @page = (params[:page] || 1).to_i
+  @page = validate_page_input(params[:page])
   @account = @storage.load_account(id)
   @max_page = @storage.max_account_page_number(id)
 
-  redirect_unless_valid(@account)
+  redirect_unless_valid(@account, @page)
 
   if @page > @max_page
     session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
