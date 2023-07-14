@@ -30,6 +30,19 @@
   </tbody>
 </table>
 
+<p>
+  <% if @page > 1 %>
+    <a href='?page=<%= @page - 1%>'>Previous Page</a>
+  <% else %>
+    Previous Page
+  <% end %>
+  <% if @page < @max_page %>
+    <a href='?page=<%= @page + 1 %>'>Next Page</a>
+  <% else %>
+    Next Page
+  <% end %>
+<p>
+
 <h3>Accounts</h3>
 
 <table>

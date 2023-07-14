@@ -150,8 +150,14 @@ get '/' do
 end
 
 get '/budget' do
-  @categories = @storage.all_categories
+  @page = validate_page_input(params[:page])
+  @max_page = @storage.max_budget_page_number
+
+  redirect_unless_valid(@page)
+  @categories = @storage.load_categories(@page)
   @accounts = @storage.all_accounts
+
+
   erb :main, layout: :layout
 end
 

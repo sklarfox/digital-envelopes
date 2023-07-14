@@ -37,6 +37,21 @@ class DatabasePersistance
     result.map { |tuple| tuple_to_category_hash(tuple) }
   end
 
+  def load_categories(page)
+    sql = <<~SQL
+      SELECT categories.*,
+             assigned_amount - COALESCE(sum(transactions.amount), 0) AS amount_remaining,
+             sum(transactions.amount) AS transaction_total
+      FROM categories LEFT JOIN transactions ON categories.id = category_id
+      GROUP BY categories.id
+      LIMIT 10 OFFSET $1;
+    SQL
+    offset = (page * 10) - 10
+    result = query(sql, offset)
+
+    result.map { |tuple| tuple_to_category_hash(tuple) }
+  end
+
   def all_accounts
     sql = <<~SQL
         SELECT accounts.*,
@@ -124,10 +139,18 @@ class DatabasePersistance
 
   def max_account_page_number(id)
     sql = <<~SQL
-      SELECT count(id) from transactions
+      SELECT count(id) FROM transactions
       WHERE account_id = $1;
     SQL
     result = query(sql, id).first['count'].to_i
+    return 1 if result == 0
+    ((result - 1)/ 10) + 1
+  end
+
+  def max_budget_page_number
+    sql = 'SELECT count(id) FROM categories;'
+
+    result = query(sql).first['count'].to_i
     return 1 if result == 0
     ((result - 1)/ 10) + 1
   end
