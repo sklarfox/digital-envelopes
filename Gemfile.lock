@@ -29,12 +29,12 @@ PLATFORMS
   arm64-darwin-22
 
 DEPENDENCIES
-  bcrypt
-  erubis
-  pg
-  sinatra
-  sinatra-contrib
-  webrick
+  bcrypt (>= 3.1.19)
+  erubis (>= 2.7.0)
+  pg (>= 1.5.3)
+  sinatra (>= 3.0.6)
+  sinatra-contrib (>= 3.0.6)
+  webrick (>= 1.8.1)
 
 RUBY VERSION
    ruby 3.2.2p53

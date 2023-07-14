@@ -12,9 +12,16 @@ RDBMS: postgreSQL Version 14.8
 
 #### Installation
 
-1. Create a psql database named `budget`. Importing `schema_empty.sql` will create the minimum required schema, but otherwise leave the budget empty. `schema_populated.sql` will create the schema and populate the budget with some test data.
-2. Run `ruby budget.rb` to start the web server.
-3. Navigate to `localhost:4567` (or whatever port your application is listening on).
+1. Unzip budget.zip to the directory of your choosing
+2. Run the command `$ bundle install` from the project directory to ensure all required gems are installed and updated to a compatible version
+3. Ensure a compatible version of postgreSQL is installed (recommended 14.8 or higher)
+4. Run the command `$ createdb budget` from the terminal to create the required postgres database.
+5. Import **one** of two files into the database:
+   1. `schema_empty.sql` will create the minimum required schema, but otherwise leave the budget empty. Execute `$ psql -d budget < schema_empty.sql`
+   2.  `schema_populated.sql` will create the schema and populate the budget with some test data. Execute `$ psql -d budget < schema_populated.sql`
+
+6. Run `ruby budget.rb` to start the web server.
+7. Navigate to `localhost:4567` (or whatever port your application is listening on) from a web browser to access the app.
 
 #### A bit on the 'Envelope' system of personal finance
 
