@@ -20,8 +20,9 @@ class DatabasePersistance
         WHERE categories.id = $1
         GROUP BY categories.id;
     SQL
-    result = query(sql, id)
-    tuple_to_category_hash(result.first)
+    result = query(sql, id).first
+
+    tuple_to_category_hash(result) if result
   end
 
   def all_categories
@@ -65,6 +66,8 @@ class DatabasePersistance
   end
 
   def tuple_to_category_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'].to_i,
       name: tuple['name'],
       assigned_amount: tuple['assigned_amount'],
@@ -72,6 +75,8 @@ class DatabasePersistance
   end
 
   def tuple_to_transaction_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'].to_i,
       amount: tuple['amount'],
       memo: tuple['memo'],
@@ -82,6 +87,8 @@ class DatabasePersistance
   end
 
   def tuple_to_account_hash(tuple)
+    return nil unless tuple
+
     { id: tuple['id'],
       name: tuple['name'],
       balance: tuple['balance'] }
@@ -112,7 +119,7 @@ class DatabasePersistance
           GROUP BY accounts.id ORDER BY accounts.name;
     SQL
     result = query(sql, id).first
-    tuple_to_account_hash(result)
+    tuple_to_account_hash(result) if result
   end
 
   def max_account_page_number(id)
@@ -193,7 +200,8 @@ class DatabasePersistance
     WHERE t.id = $1;
     SQL
 
-    tuple_to_transaction_hash(query(sql, id).first)
+    result = query(sql, id).first
+    tuple_to_transaction_hash(result) if result
   end
 
   def change_transaction_details(amount, memo, date, cat_id, acc_id, id)

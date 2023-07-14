@@ -90,6 +90,13 @@ def valid_credentials?(username, password)
   end
 end
 
+def redirect_unless_valid(element)
+  if !element
+    session[:error] = "The requested page doesn't exist."
+    redirect '/budget'
+  end
+end
+
 before do
   @storage = DatabasePersistance.new
 
@@ -156,6 +163,7 @@ post '/category/:id/new_allocation' do
   amount = params[:new_assigned_amount]
   id = params[:id].to_i
   @category = @storage.load_category(id)
+  
   error = error_for_allocation_amount(amount)
   if error
     @categories = @storage.all_categories
@@ -179,10 +187,7 @@ get '/category/:id' do
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
 
-  if @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
-    @page = @max_page
-  end
+  redirect_unless_valid(@category)
 
   @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
@@ -191,6 +196,8 @@ end
 get '/category/:id/edit' do
   id = params[:id].to_i
   @category = @storage.load_category(id)
+  redirect_unless_valid(@category)
+
   erb :edit_category, layout: :layout
 end
 
@@ -238,6 +245,8 @@ get '/account/:id' do
   @account = @storage.load_account(id)
   @max_page = @storage.max_account_page_number(id)
 
+  redirect_unless_valid(@account)
+
   if @page > @max_page
     session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
     @page = @max_page
@@ -249,6 +258,7 @@ end
 get '/account/:id/edit' do
   id = params[:id].to_i
   @account = @storage.load_account(id)
+  redirect_unless_valid(@account)
   erb :edit_account, layout: :layout
 end
 
@@ -307,6 +317,8 @@ get '/transaction/:id/edit' do
   @transaction = @storage.load_transaction(id)
   @categories = @storage.all_categories
   @accounts = @storage.all_accounts
+
+  redirect_unless_valid(@transaction)
   erb :edit_transaction, layout: :layout
 end
 
