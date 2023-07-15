@@ -160,11 +160,12 @@ get '/budget' do
   @page = validate_page_input(params[:page])
   @max_page = @storage.max_budget_page_number
 
-  redirect_unless_valid(@page)
-
-  if @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of categories!"
-    @page = @max_page
+  if !@page
+    session[:error] = "Sorry, the page you requested doesn't exist."
+    redirect '/budget'
+  elsif @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist."
+    redirect '/budget'
   end
 
   @categories = @storage.load_categories(@page)
@@ -220,6 +221,11 @@ get '/category/:id' do
   @max_page = @storage.max_category_page_number(id)
 
   redirect_unless_valid(@category, @page)
+
+  if @page > @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist."
+    redirect "/category/#{id}"
+  end
 
   @transactions = @storage.load_transactions_for_category(id, @page)
   erb :category, layout: :layout
@@ -280,8 +286,8 @@ get '/account/:id' do
   redirect_unless_valid(@account, @page)
 
   if @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist. This is the last page of transactions!"
-    @page = @max_page
+    session[:error] = "Sorry, the page you requested doesn't exist."
+    redirect "/account/#{id}"
   end
   @transactions = @storage.load_transactions_for_account(id, @page)
   erb :account, layout: :layout
