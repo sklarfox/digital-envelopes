@@ -20,7 +20,7 @@ RDBMS: postgreSQL Version 14.8
    1. `schema_empty.sql` will create the minimum required schema, but otherwise leave the budget empty. Execute `$ psql -d budget < schema_empty.sql`
    2.  `schema_populated.sql` will create the schema and populate the budget with some test data. Execute `$ psql -d budget < schema_populated.sql`
 
-6. Run `ruby budget.rb` to start the web server.
+6. Run `bundle exec ruby budget.rb` to start the web server.
 7. Navigate to `localhost:4567` (or whatever port your application is listening on) from a web browser to access the app.
 
 #### A bit on the 'Envelope' system of personal finance

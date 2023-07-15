@@ -5,9 +5,6 @@ require "tilt/erubis"
 require "yaml"
 require_relative "database_persistance"
 
-require 'pry'
-require 'pry-byebug'
-
 configure do
   enable :sessions
   set :session_secret,
@@ -113,6 +110,14 @@ def validate_page_input(input)
   end
 end
 
+def validate_id(id)
+  if id.to_i.to_s != id
+    nil
+  else
+    id.to_i
+  end
+end
+
 before do
   @storage = DatabasePersistance.new
 
@@ -188,7 +193,7 @@ end
 
 post '/category/:id/new_allocation' do
   amount = params[:new_assigned_amount]
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @category = @storage.load_category(id)
   
   error = error_for_allocation_amount(amount)
@@ -209,7 +214,7 @@ get '/category/1' do
 end
 
 get '/category/:id' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @page = validate_page_input(params[:page])
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
@@ -221,7 +226,7 @@ get '/category/:id' do
 end
 
 get '/category/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @category = @storage.load_category(id)
   redirect_unless_valid(@category)
 
@@ -229,7 +234,7 @@ get '/category/:id/edit' do
 end
 
 post '/category/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   new_category_name = params[:new_category_name]
   @category = @storage.load_category(id)
 
@@ -267,7 +272,7 @@ post '/account/new' do
 end
 
 get '/account/:id' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @page = validate_page_input(params[:page])
   @account = @storage.load_account(id)
   @max_page = @storage.max_account_page_number(id)
@@ -283,14 +288,14 @@ get '/account/:id' do
 end
 
 get '/account/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @account = @storage.load_account(id)
   redirect_unless_valid(@account)
   erb :edit_account, layout: :layout
 end
 
 post '/account/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   new_account_name = params[:new_account_name]
   @account = @storage.load_account(id)
 
@@ -340,7 +345,7 @@ post '/transaction/new' do
 end
 
 get '/transaction/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   @transaction = @storage.load_transaction(id)
   @categories = @storage.all_categories
   @accounts = @storage.all_accounts
@@ -350,7 +355,7 @@ get '/transaction/:id/edit' do
 end
 
 post '/transaction/:id/edit' do
-  id = params[:id].to_i
+  id = validate_id(params[:id])
   amount = params[:amount].strip
   memo = params[:memo]
   date = params[:date]
