@@ -161,10 +161,10 @@ get '/budget' do
   @max_page = @storage.max_budget_page_number
 
   if !@page
-    session[:error] = "Sorry, the page you requested doesn't exist."
+    session[:error] = "Sorry, the page number you requested doesn't exist."
     redirect '/budget'
   elsif @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist."
+    session[:error] = "Sorry, the page number you requested doesn't exist."
     redirect '/budget'
   end
 
@@ -220,10 +220,14 @@ get '/category/:id' do
   @category = @storage.load_category(id)
   @max_page = @storage.max_category_page_number(id)
 
-  redirect_unless_valid(@category, @page)
-
-  if @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist."
+  if !@category
+    session[:error] = "Sorry, the category you requested doesn't exist."
+    redirect '/budget'
+  elsif !@page
+    session[:error] = "Sorry, the page number you requested doesn't exist."
+    redirect "/category/#{id}"
+  elsif @page > @max_page
+    session[:error] = "Sorry, the page number you requested doesn't exist."
     redirect "/category/#{id}"
   end
 
@@ -234,7 +238,11 @@ end
 get '/category/:id/edit' do
   id = validate_id(params[:id])
   @category = @storage.load_category(id)
-  redirect_unless_valid(@category)
+
+  if !@category
+    session[:error] = "Sorry, the category you requested doesn't exist."
+    redirect '/budget'
+  end
 
   erb :edit_category, layout: :layout
 end
@@ -283,10 +291,14 @@ get '/account/:id' do
   @account = @storage.load_account(id)
   @max_page = @storage.max_account_page_number(id)
 
-  redirect_unless_valid(@account, @page)
-
-  if @page > @max_page
-    session[:error] = "Sorry, the page you requested doesn't exist."
+  if !@account
+    session[:error] = "Sorry, the account you requested doesn't exist."
+    redirect '/budget'
+  elsif !@page
+    session[:error] = "Sorry, the page number you requested doesn't exist."
+    redirect "/account/#{id}"
+  elsif @page > @max_page
+    session[:error] = "Sorry, the page number you requested doesn't exist."
     redirect "/account/#{id}"
   end
   @transactions = @storage.load_transactions_for_account(id, @page)
