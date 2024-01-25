@@ -2,11 +2,17 @@ GEM
   remote: https://rubygems.org/
   specs:
     bcrypt (3.1.19)
+    bson (4.15.0)
     erubis (2.7.0)
+    mongo (2.19.3)
+      bson (>= 4.14.1, < 5.0.0)
     multi_json (1.15.0)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
+    nio4r (2.7.0)
     pg (1.5.3)
+    puma (6.4.2)
+      nio4r (~> 2.0)
     rack (2.2.7)
     rack-protection (3.0.6)
       rack
@@ -31,7 +37,9 @@ PLATFORMS
 DEPENDENCIES
   bcrypt (>= 3.1.19)
   erubis (>= 2.7.0)
+  mongo (~> 2)
   pg (>= 1.5.3)
+  puma
   sinatra (>= 3.0.6)
   sinatra-contrib (>= 3.0.6)
   webrick (>= 1.8.1)

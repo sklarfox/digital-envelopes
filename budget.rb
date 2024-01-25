@@ -4,6 +4,7 @@ require "sinatra"
 require "tilt/erubis"
 require "yaml"
 require_relative "database_persistance"
+require_relative "adjustment_log"
 
 configure do
   enable :sessions
@@ -120,6 +121,7 @@ end
 
 before do
   @storage = DatabasePersistance.new
+  @logger = AdjustmentLog.new
 
   unless session[:username] || env['REQUEST_PATH'] == '/login'
     session[:original_path] = env['REQUEST_PATH']
@@ -196,6 +198,7 @@ post '/category/:id/new_allocation' do
   amount = params[:new_assigned_amount]
   id = validate_id(params[:id])
   @category = @storage.load_category(id)
+  @logger.log_adjustment(amount, @category)
   
   error = error_for_allocation_amount(amount)
   if error
